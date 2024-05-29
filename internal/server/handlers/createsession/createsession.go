@@ -2,10 +2,12 @@ package createsession
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
 	"petsittersGameServer/internal/logger"
+	rp "petsittersGameServer/internal/server/handlers/response"
 	"petsittersGameServer/internal/storage"
 	"petsittersGameServer/internal/tools/api"
 
@@ -16,14 +18,8 @@ import (
 
 // Request - структура запроса для создания игровой сессии.
 type Request struct {
-	Name  string `json:"username"`
+	Name  string `json:"username" validate:"required"`
 	Email string `json:"email" validate:"required,email"`
-}
-
-// Response - структура ответа со статусом, ошибкой и созданной сессией.
-type Response struct {
-	api.RespStatus
-	GameSession storage.GameSession `json:"gameSession"`
 }
 
 // Возможно, интерфейсы хранилища лучше перенести в пакет storage
@@ -32,7 +28,7 @@ type SessionCreator interface {
 }
 
 // New - возвращает новый хэндлер для создания игровой сессии.
-func New(log *slog.Logger, sc SessionCreator) http.HandlerFunc {
+func New(log *slog.Logger, st SessionCreator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.createsession.New"
 
@@ -40,18 +36,21 @@ func New(log *slog.Logger, sc SessionCreator) http.HandlerFunc {
 			slog.String("op", operation),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
+		log.Info("new request to create a game session")
 
 		// Декодируем тело запроса в структуру Request и проверяем на ошибки
 		var req Request
 		err := render.DecodeJSON(r.Body, &req)
 		if errors.Is(err, io.EOF) {
 			log.Error("request body is empty")
-			render.JSON(w, r, api.Error("failed to create new gameSession, empty request"))
+			w.WriteHeader(400)
+			render.PlainText(w, r, "Error, failed to create new gameSession: empty request")
 			return
 		}
 		if err != nil {
 			log.Error("failed to decode request body", logger.Err(err))
-			render.JSON(w, r, api.Error("failed to create new gameSession, failed to decode request"))
+			w.WriteHeader(400)
+			render.PlainText(w, r, "Error, failed to create new gameSession: failed to decode request")
 			return
 		}
 		log.Info("request body decoded", slog.Any("request", req))
@@ -61,35 +60,39 @@ func New(log *slog.Logger, sc SessionCreator) http.HandlerFunc {
 		if err != nil {
 			validateErr := err.(validator.ValidationErrors)
 			log.Error("invalid request", logger.Err(err))
-
-			// render.JSON(w, r, api.Error("invalid request"))
-			render.JSON(w, r, api.ValidationError(validateErr))
+			w.WriteHeader(422)
+			str := fmt.Sprintf("Error, failed to create new gameSession: %s", api.ValidationError(validateErr))
+			render.PlainText(w, r, str)
 			return
 		}
 
 		// Создаем нового юзера и игровую сессию по данным из запроса
-		gs, err := sc.CreateSession(req.Name, req.Email)
+		gs, err := st.CreateSession(req.Name, req.Email)
 		if errors.Is(err, storage.ErrUserExists) {
 			log.Error("user already exists", slog.String("email", req.Email))
-			render.JSON(w, r, api.Error("failed to create new gameSession, user already exists"))
+			w.WriteHeader(422)
+			render.PlainText(w, r, "Error, failed to create new gameSession: user already exists")
 			return
 		}
 		if errors.Is(err, storage.ErrInput) {
 			log.Error("incorrect input user data", slog.String("name", req.Name), slog.String("email", req.Email))
-			render.JSON(w, r, api.Error("failed to create new gameSession, incorrect input user data"))
+			w.WriteHeader(422)
+			render.PlainText(w, r, "Error, failed to create new gameSession: incorrect input user data")
 			return
 		}
 		if err != nil {
 			log.Error("failed to create gameSession", logger.Err(err))
-			render.JSON(w, r, api.Error("failed to create new gameSession"))
+			w.WriteHeader(422)
+			render.PlainText(w, r, "Error, failed to create new gameSession: unknown error")
 			return
 		}
 		log.Info("new gameSession created", slog.Int("id", gs.SessionID))
 
+		// TODO: cookie
 		// Записывает данные юзера и сессии в структуру Response
-		var resp Response
+		var resp rp.Response
 		resp.GameSession = *gs
-		resp.RespStatus = api.OK()
+		w.WriteHeader(201)
 		render.JSON(w, r, resp)
 	}
 }

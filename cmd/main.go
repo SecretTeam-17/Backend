@@ -44,7 +44,7 @@ func main() {
 	// router.Use(middleware.URLFormat)
 
 	// Объявляем REST хэндлеры
-	router.Post("/new", createsession.New(log, storage))
+	router.Post("/api/session", createsession.New(log, storage))
 
 	// Конфигурируем сервер из данных конфиг файла
 	srv := &http.Server{
