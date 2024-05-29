@@ -55,6 +55,7 @@ func New(log *slog.Logger, st SessionCreator) http.HandlerFunc {
 		}
 		log.Info("request body decoded", slog.Any("request", req))
 
+		// Валидация полей json из запроса
 		valid := validator.New()
 		err = valid.Struct(req)
 		if err != nil {
@@ -89,7 +90,7 @@ func New(log *slog.Logger, st SessionCreator) http.HandlerFunc {
 		log.Info("new gameSession created", slog.Int("id", gs.SessionID))
 
 		// TODO: cookie
-		// Записывает данные юзера и сессии в структуру Response
+		// Записываем данные сессии в структуру Response
 		var resp rp.Response
 		resp.GameSession = *gs
 		w.WriteHeader(201)

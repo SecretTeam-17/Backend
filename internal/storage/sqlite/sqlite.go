@@ -120,9 +120,7 @@ func (s *Storage) Close() error {
 	return s.db.Close()
 }
 
-// func (s *Storage) GetAllSessions() (*[]GameSessiom, error)
-// func (s *Storage) GetSessionByID(id int) (*GameSession, error)
-// func (s *Storage) GetSessionByEmail(email string) (*GameSession, error)
+// func (s *Storage) GetAllSessions() ([]*GameSession, error)
 // func (s *Storage) UpdateSession(GameSessiom) error
 // func (s *Storage) CleanSession(id int) (*GameSession, error)
 // func (s *Storage) DeleteSession(id int) error
