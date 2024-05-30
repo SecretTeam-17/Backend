@@ -7,7 +7,9 @@ var (
 	ErrUserExists      = errors.New("user exists")
 	ErrInput           = errors.New("incorrect user data input")
 	ErrSessionNotFound = errors.New("session not found")
+	ErrSessionsIsEmpty = errors.New("table game_sessions is empty")
 	ErrUserNotFound    = errors.New("user not found")
+	ErrModuleNotFound  = errors.New("module not found")
 )
 
 // GameSession - структура игровой сессии.

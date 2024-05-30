@@ -35,11 +35,13 @@ func New(storagePath string) (*Storage, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
+
+	// Создаем таблицы:
 	// Таблица modules
 	_, err = tx.Exec(`
 		CREATE TABLE IF NOT EXISTS modules (
 			id INTEGER PRIMARY KEY,
-			name TEXT NOT NULL,
+			name TEXT NOT NULL UNIQUE,
 			description TEXT DEFAULT ''
 		);
 	`)
@@ -92,7 +94,7 @@ func New(storagePath string) (*Storage, error) {
 	_, err = tx.Exec(`
 		CREATE TABLE IF NOT EXISTS game_sessions (
 			id INTEGER PRIMARY KEY,
-			user_id INTEGER NOT NULL REFERENCES users(id),
+			user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			current_module INTEGER REFERENCES modules(id) DEFAULT 1,
@@ -106,6 +108,20 @@ func New(storagePath string) (*Storage, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
+
+	// Вносим обязательные данные в таблицу module
+	// Пока 4 модуля, потом заменим на реальные данные
+	_, err = tx.Exec(`
+		INSERT OR IGNORE INTO modules (name, description) VALUES
+		('module_name_1', 'description 1'),
+		('module_name_2', 'description 2'),
+		('module_name_3', 'description 3'),
+		('module_name_4', 'description 4');
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+
 	// Подтверждаем транзакцию
 	err = tx.Commit()
 	if err != nil {
@@ -119,8 +135,3 @@ func New(storagePath string) (*Storage, error) {
 func (s *Storage) Close() error {
 	return s.db.Close()
 }
-
-// func (s *Storage) GetAllSessions() ([]*GameSession, error)
-// func (s *Storage) UpdateSession(GameSessiom) error
-// func (s *Storage) CleanSession(id int) (*GameSession, error)
-// func (s *Storage) DeleteSession(id int) error
