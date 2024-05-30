@@ -1,4 +1,4 @@
-package createsession
+package creategs
 
 import (
 	"errors"

@@ -1,4 +1,4 @@
-package getsessionemail
+package getgsemail
 
 import (
 	"errors"

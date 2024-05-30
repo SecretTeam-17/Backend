@@ -1,4 +1,4 @@
-package getsessionid
+package getgsid
 
 import (
 	"errors"

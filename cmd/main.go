@@ -7,9 +7,9 @@ import (
 	"os"
 	"petsittersGameServer/internal/config"
 	"petsittersGameServer/internal/logger"
-	"petsittersGameServer/internal/server/handlers/createsession"
-	"petsittersGameServer/internal/server/handlers/getsessionemail"
-	"petsittersGameServer/internal/server/handlers/getsessionid"
+	"petsittersGameServer/internal/server/handlers/creategs"
+	"petsittersGameServer/internal/server/handlers/getgsemail"
+	"petsittersGameServer/internal/server/handlers/getgsid"
 	"petsittersGameServer/internal/storage/sqlite"
 	"petsittersGameServer/internal/tools/stopsignal"
 	"time"
@@ -46,9 +46,9 @@ func main() {
 	//router.Use(middleware.URLFormat)
 
 	// Объявляем REST хэндлеры
-	router.Post("/api/session", createsession.New(log, storage))
-	router.Get("/api/session/id/{id}", getsessionid.New(log, storage))
-	router.Get("/api/session/email/{email}", getsessionemail.New(log, storage))
+	router.Post("/api/session", creategs.New(log, storage))
+	router.Get("/api/session/id/{id}", getgsid.New(log, storage))
+	router.Get("/api/session/email/{email}", getgsemail.New(log, storage))
 
 	// Конфигурируем сервер из данных конфиг файла
 	srv := &http.Server{
