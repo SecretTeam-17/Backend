@@ -27,7 +27,6 @@ func New(storagePath string) (*Storage, error) {
 	}
 
 	// TODO: добавить таблицу с введенными игроком ответами
-	// TODO: генерация uuid для id атрибутов
 
 	// Начинаем транзакцию
 	tx, err := db.Begin()

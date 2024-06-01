@@ -21,7 +21,7 @@ type SessionByEmail interface {
 // New - возвращает новый хэндлер для получения игровой сессии по email.
 func New(log *slog.Logger, st SessionByEmail) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const operation = "handlers.getsessionemail.New"
+		const operation = "handlers.getgsemail.New"
 
 		log = log.With(
 			slog.String("op", operation),
@@ -56,7 +56,7 @@ func New(log *slog.Logger, st SessionByEmail) http.HandlerFunc {
 		}
 		log.Info("game session was found successfully", slog.String("user_email", email))
 
-		// Записываем сессии в структуру Response
+		// Записываем сессию в структуру Response
 		var resp rp.Response
 		resp.GameSession = *gs
 		w.WriteHeader(200)

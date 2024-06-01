@@ -18,8 +18,8 @@ import (
 
 // Request - структура запроса для создания игровой сессии.
 type Request struct {
-	Name  string `json:"username" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
+	Name  string `json:"username" validate:"required,max=100"`
+	Email string `json:"email" validate:"required,email,max=100"`
 }
 
 // Возможно, интерфейсы хранилища лучше перенести в пакет storage
@@ -30,7 +30,7 @@ type SessionCreator interface {
 // New - возвращает новый хэндлер для создания игровой сессии.
 func New(log *slog.Logger, st SessionCreator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const operation = "handlers.createsession.New"
+		const operation = "handlers.creategs.New"
 
 		log = log.With(
 			slog.String("op", operation),

@@ -140,9 +140,9 @@ func (s *Storage) GetSessionByEmail(email string) (*storage.GameSession, error) 
 }
 
 // GetSessions - возвращает все игровые сессии из БД.
-func (s *Storage) GetSessions() ([]*storage.GameSession, error) {
+func (s *Storage) GetSessions() ([]storage.GameSession, error) {
 	const operation = "storage.sqlite.GetSessions"
-	var arr []*storage.GameSession
+	var arr []storage.GameSession
 
 	// Подготавливаем запрос
 	stmt, err := s.db.Prepare(`
@@ -182,10 +182,10 @@ func (s *Storage) GetSessions() ([]*storage.GameSession, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", operation, checkDBError(err))
 		}
-		arr = append(arr, &gs)
+		arr = append(arr, gs)
 	}
 	if len(arr) == 0 {
-		return nil, fmt.Errorf("%s: %w", operation, storage.ErrSessionsIsEmpty)
+		return nil, fmt.Errorf("%s: %w", operation, storage.ErrSessionsEmpty)
 	}
 	return arr, nil
 }
@@ -375,6 +375,41 @@ func (s *Storage) DeleteSessionById(id int) error {
 	}
 	// Выполняем удаление игрока
 	_, err = tx.Stmt(userStmt).Exec(id)
+	if err != nil {
+		return fmt.Errorf("%s: %w", operation, err)
+	}
+
+	// Подтверждаем транзакцию
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("%s: %w", operation, err)
+	}
+
+	return nil
+}
+
+// TruncateTables - удаляет все записи из таблиц users и game_sessions.
+func (s *Storage) TruncateTables() error {
+	const operation = "storage.sqlite.TruncateTables"
+
+	// Начинаем транзакцию
+	tx, err := s.db.Begin()
+	defer tx.Rollback()
+	if err != nil {
+		return fmt.Errorf("%s: %w", operation, err)
+	}
+
+	// Очищаем таблицу игровых сессий
+	_, err = tx.Exec(`
+		DELETE FROM game_sessions;
+	`)
+	if err != nil {
+		return fmt.Errorf("%s: %w", operation, err)
+	}
+	// Очищаем таблицу игроков
+	_, err = tx.Exec(`
+		DELETE FROM users;
+	`)
 	if err != nil {
 		return fmt.Errorf("%s: %w", operation, err)
 	}

@@ -4,34 +4,46 @@
 * подключает конфиг файл
 * настроено логирование. Пока только в stdout, потом будет в файл
 * подключается к существующей БД SQLite. Если ее нет, то создает новую и заполняет пустыми таблицами
-* API для игровой сессии возвращает json вида game_session:
+* API для игровой сессии использует json вида game_session:
 
 ```
 {
-    "id": "123",
-    "userId": "123",
+    "id": "1",
+    "userId": "1",
     "username": "bob",
-    "email": "qwe@gml.com",
-    "createdAt": "11.11.11",
-    "updatedAt": "11.11.11",
-    "currentScene": 1,
-    "complete": false,
-    "anyFieldOne": "qwerty",
-    "anyFieldTwo": "asdfgh",
-    "modules": {},
-    "minigame": {}
+    "email": "bob@gmail.com",
+    "createdAt": "2024-06-01T17:04:13Z",
+    "updatedAt": "2024-06-01T17:04:13Z",
+    "currentModule": 1,
+    "completed": false,
+    "anyFieldOne": "",
+    "anyFieldTwo": "",
+    "modules": "",
+    "minigame": ""
 }
 ```
 
 POST "/api/session" - принимает json с обязательными полями `username` (непустой) и `email` (валидный емэйл с @ и .), возвращает json вида game_session.
 Принимаемые поля `username` и `email` обязательны, иначе кукиш вместо новой сессии, вернет ошибку.
 
-GET "/api/session/id/{id}" - принимает параметр id игровой сессии, возвращает либо json вида game_session, либо ошибку.
+GET "/api/session/id/{id}" - принимает параметр id игровой сессии, возвращает json вида game_session.
 
-GET "/api/session/email/{email}" - принимает параметр email игрока, возвращает либо json вида game_session, либо ошибку.
+GET "/api/session/email/{email}" - принимает параметр email игрока, возвращает либо json вида game_session.
+
+GET "/api/session/all" - возвращает все игровые сессии в виде массива json game_session.
+
+GET "/api/session/new/{id}" - принимает параметр id игровой сессии, приводит изменяемые поля к виду по-умолчанию и возвращает json с очищенной игровой сессией.
+
+PUT "/api/session" - принимает json вида game_session, обязательно содержащий все изменяемые поля и id сессии. Любое изменяемое поле, имеющее пустое значение или отсутствующее вообще будет приведено к значению по-умолчанию. В случае успеха возвращает 204 и пустое тело.
+
+DELETE "/api/session/id/{id}" - принимает параметр id игровой сессии и удаляет сессию и игрока из БД. В случае успеха возвращает 204 и пустое тело.
+
+DELETE "/api/session/verydangerousbutton" - очищает таблицы игроков и игровых сессий. Для упрощения тестирования.
+
+Все ошибки возвращаются в text/plain.
+
+Изменяемые поля: `currentModule` (int), `completed` (bool), `anyFieldOne` (string), `anyFieldTwo` (string), `modules` (string), `minigame` (string).
+
+На данный момент нужно экранировать все внутренние кавычки json файла, если записываем его в изменяемое поле с типом string. Когда будет ясна структура json modules, тогда можно будет писать нормально.
 
 Сервер запускается и работает. Завершается по сигнау прерывания.
-
-На днях запилю Dockerfile, и можно будет собирать его у себя.
-
-:-)

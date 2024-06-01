@@ -4,7 +4,7 @@ import (
 	"petsittersGameServer/internal/storage"
 )
 
-// Response - структура ответа со статусом, ошибкой и созданной сессией.
+// Response - структура ответа с игровой сессией.
 type Response struct {
 	storage.GameSession
 }

@@ -7,9 +7,14 @@ import (
 	"os"
 	"petsittersGameServer/internal/config"
 	"petsittersGameServer/internal/logger"
+	"petsittersGameServer/internal/server/handlers/cleangs"
 	"petsittersGameServer/internal/server/handlers/creategs"
+	"petsittersGameServer/internal/server/handlers/deletegs"
+	"petsittersGameServer/internal/server/handlers/getallgs"
 	"petsittersGameServer/internal/server/handlers/getgsemail"
 	"petsittersGameServer/internal/server/handlers/getgsid"
+	"petsittersGameServer/internal/server/handlers/truncate"
+	"petsittersGameServer/internal/server/handlers/updategs"
 	"petsittersGameServer/internal/storage/sqlite"
 	"petsittersGameServer/internal/tools/stopsignal"
 	"time"
@@ -45,10 +50,18 @@ func main() {
 	router.Use(middleware.Recoverer)
 	//router.Use(middleware.URLFormat)
 
-	// Объявляем REST хэндлеры
-	router.Post("/api/session", creategs.New(log, storage))
+	// Объявляем REST API хэндлеры для работы со структурой GameSession
 	router.Get("/api/session/id/{id}", getgsid.New(log, storage))
 	router.Get("/api/session/email/{email}", getgsemail.New(log, storage))
+	router.Get("/api/session/all", getallgs.New(log, storage))
+	router.Get("/api/session/new/{id}", cleangs.New(log, storage))
+
+	router.Post("/api/session", creategs.New(log, storage))
+
+	router.Put("/api/session", updategs.New(log, storage))
+
+	router.Delete("/api/session/id/{id}", deletegs.New(log, storage))
+	router.Delete("/api/session/verydangerousbutton", truncate.New(log, storage)) // Для тестирования
 
 	// Конфигурируем сервер из данных конфиг файла
 	srv := &http.Server{

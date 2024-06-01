@@ -1,4 +1,4 @@
-package getgsid
+package cleangs
 
 import (
 	"errors"
@@ -14,20 +14,20 @@ import (
 	"github.com/go-chi/render"
 )
 
-type SessionById interface {
-	GetSessionById(id int) (*storage.GameSession, error)
+type SessionCleaner interface {
+	CleanSession(id int) (*storage.GameSession, error)
 }
 
-// New - возвращает новый хэндлер для получения игровой сессии по id.
-func New(log *slog.Logger, st SessionById) http.HandlerFunc {
+// New - возвращает новый хэндлер для очистки игровой сессии по id.
+func New(log *slog.Logger, st SessionCleaner) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const operation = "handlers.getgsid.New"
+		const operation = "handlers.cleangs.New"
 
 		log = log.With(
 			slog.String("op", operation),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
-		log.Info("new request to receive a game session by id")
+		log.Info("new request to clean a game session")
 
 		// Получаем параметр из запроса и приводим его к типу int
 		param := chi.URLParam(r, "id")
@@ -35,25 +35,25 @@ func New(log *slog.Logger, st SessionById) http.HandlerFunc {
 		if err != nil {
 			log.Error("invalid game session id", logger.Err(err))
 			w.WriteHeader(400)
-			render.PlainText(w, r, "Error, failed to receive a game session: incorrect id")
+			render.PlainText(w, r, "Error, failed to clean a game session: incorrect id")
 			return
 		}
 
-		// Получаем игровую сессию из БД по ее id
-		gs, err := st.GetSessionById(id)
+		// Получаем очищенную игровую сессию из БД
+		gs, err := st.CleanSession(id)
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.Int("session_id", id))
 			w.WriteHeader(404)
-			render.PlainText(w, r, "Error, failed to receive a game session: id not found")
+			render.PlainText(w, r, "Error, failed to clean a game session: id not found")
 			return
 		}
 		if err != nil {
-			log.Error("failed to receive a game session", slog.Int("session_id", id))
+			log.Error("failed to clean a game session", slog.Int("session_id", id))
 			w.WriteHeader(404)
-			render.PlainText(w, r, "Error, failed to receive a game session: unknown error")
+			render.PlainText(w, r, "Error, failed to clean a game session: unknown error")
 			return
 		}
-		log.Info("game session was found successfully", slog.Int("session_id", id))
+		log.Info("game session was cleaned successfully", slog.Int("session_id", id))
 
 		// Записываем сессию в структуру Response
 		var resp rp.Response

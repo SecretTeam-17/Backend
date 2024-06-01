@@ -26,10 +26,10 @@ type HTTPServer struct {
 // MustLoad - инициализируем данные из конфига. Если не смогли, то завершаем приложение с ошибкой.
 func MustLoad() *Config {
 	// Берем путь к файлу конфига из переменной окружения
-	// configPath := os.Getenv("CONFIG_PATH")
+	configPath := os.Getenv("CONFIG_PATH")
 
 	// Вариант для локала
-	configPath := "./configs/local.yaml"
+	// configPath := "./configs/local.yaml"
 
 	if configPath == "" {
 		log.Fatal("CONFIG_PATH is not set")
