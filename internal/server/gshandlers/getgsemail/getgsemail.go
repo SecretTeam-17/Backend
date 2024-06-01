@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"petsittersGameServer/internal/logger"
-	rp "petsittersGameServer/internal/server/handlers/response"
+	rp "petsittersGameServer/internal/server/gshandlers/response"
 	"petsittersGameServer/internal/storage"
 
 	"github.com/go-chi/chi/v5"

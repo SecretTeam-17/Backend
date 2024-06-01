@@ -7,14 +7,15 @@ import (
 	"os"
 	"petsittersGameServer/internal/config"
 	"petsittersGameServer/internal/logger"
-	"petsittersGameServer/internal/server/handlers/cleangs"
-	"petsittersGameServer/internal/server/handlers/creategs"
-	"petsittersGameServer/internal/server/handlers/deletegs"
-	"petsittersGameServer/internal/server/handlers/getallgs"
-	"petsittersGameServer/internal/server/handlers/getgsemail"
-	"petsittersGameServer/internal/server/handlers/getgsid"
-	"petsittersGameServer/internal/server/handlers/truncate"
-	"petsittersGameServer/internal/server/handlers/updategs"
+	"petsittersGameServer/internal/server/gshandlers/cleangs"
+	"petsittersGameServer/internal/server/gshandlers/creategs"
+	"petsittersGameServer/internal/server/gshandlers/deletegs"
+	"petsittersGameServer/internal/server/gshandlers/getallgs"
+	"petsittersGameServer/internal/server/gshandlers/getgsemail"
+	"petsittersGameServer/internal/server/gshandlers/getgsid"
+	"petsittersGameServer/internal/server/gshandlers/truncate"
+	"petsittersGameServer/internal/server/gshandlers/updategs"
+	"petsittersGameServer/internal/server/index/indexpage"
 	"petsittersGameServer/internal/storage/sqlite"
 	"petsittersGameServer/internal/tools/stopsignal"
 	"time"
@@ -49,6 +50,8 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	//router.Use(middleware.URLFormat)
+
+	router.Get("/", indexpage.New(log))
 
 	// Объявляем REST API хэндлеры для работы со структурой GameSession
 	router.Get("/api/session/id/{id}", getgsid.New(log, storage))

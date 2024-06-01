@@ -45,6 +45,6 @@ COPY --from=builder /go/bin/server .
 
 ENTRYPOINT /root/server
 
-LABEL Name=petsittersgameserver Version=1.3.0
+LABEL Name=petsittersgameserver Version=1.4.2
 
 EXPOSE 8082

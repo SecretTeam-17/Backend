@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"petsittersGameServer/internal/logger"
-	rp "petsittersGameServer/internal/server/handlers/response"
+	rp "petsittersGameServer/internal/server/gshandlers/response"
 	"petsittersGameServer/internal/storage"
 	"petsittersGameServer/internal/tools/api"
 
