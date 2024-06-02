@@ -1,4 +1,5 @@
 FROM golang:1.22.3-alpine as builder
+# FROM huecker.io/library/golang:1.22.3-alpine as builder
 
 ENV CGO_ENABLED=1
 
@@ -23,6 +24,7 @@ RUN go install -ldflags='-s -w -extldflags "-static"' ./cmd/main.go
 RUN mv /go/bin/main /go/bin/server
 
 FROM alpine:latest as runner
+# FROM huecker.io/library/alpine:latest as runner
 
 ENV CGO_ENABLED=1
 
