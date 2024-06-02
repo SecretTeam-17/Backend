@@ -33,5 +33,23 @@ type User struct {
 	Email    string `json:"email"`
 }
 
-type Modules struct {
+type Modules []Module
+
+type Module struct {
+	Name      string
+	Available bool
+	Questions []Question
+}
+
+type Question struct {
+	QuestionId    int
+	QuestionText  string
+	Answers       []Answer
+	Corrects      []int
+	PlayerAnswers []int
+}
+
+type Answer struct {
+	AnswerNum  int
+	AnswerText string
 }

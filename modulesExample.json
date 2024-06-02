@@ -1,0 +1,122 @@
+[
+    {
+        "module": {
+            "name": "module_name_1",
+            "available": true,
+            "questions": [
+                {
+                "questionId": 1,
+                "questionText": "Вопрос 1",
+                "answers": [
+                    {"answerNum": 1, "answerText": "Ответ 1"},
+                    {"answerNum": 2, "answerText": "Ответ 2"},
+                    {"answerNum": 3, "answerText": "Ответ 3"}
+                ],
+                "corrects": [1, 2, 3],
+                "playerAnswers": [1, 3]
+                },
+                {
+                "questionId": 2,
+                "questionText": "Вопрос 2",
+                "answers": [
+                    {"answerNum": 1, "answerText": "Ответ 1"},
+                    {"answerNum": 2, "answerText": "Ответ 2"},
+                    {"answerNum": 3, "answerText": "Ответ 3"}
+                ],
+                "corrects": [2, 3],
+                "playerAnswers": [2, 3]
+                }
+            ]
+        }
+    },
+    {
+        "module": {
+            "name": "module_name_2",
+            "available": false,
+            "questions": [
+                {
+                "questionId": 3,
+                "questionText": "Вопрос 3",
+                "answers": [
+                    {"answerNum": 1, "answerText": "Ответ 1"},
+                    {"answerNum": 2, "answerText": "Ответ 2"},
+                    {"answerNum": 3, "answerText": "Ответ 3"}
+                ],
+                "corrects": [1, 2, 3],
+                "playerAnswers": [1, 3]
+                },
+                {
+                "questionId": 4,
+                "questionText": "Вопрос 4",
+                "answers": [
+                    {"answerNum": 1, "answerText": "Ответ 1"},
+                    {"answerNum": 2, "answerText": "Ответ 2"},
+                    {"answerNum": 3, "answerText": "Ответ 3"}
+                ],
+                "corrects": [2, 3],
+                "playerAnswers": [2, 3]
+                }
+            ]
+        }
+    },
+    {
+        "module": {
+            "name": "module_name_3",
+            "available": false,
+            "questions": [
+                {
+                "questionId": 5,
+                "questionText": "Вопрос 5",
+                "answers": [
+                    {"answerNum": 1, "answerText": "Ответ 1"},
+                    {"answerNum": 2, "answerText": "Ответ 2"},
+                    {"answerNum": 3, "answerText": "Ответ 3"}
+                ],
+                "corrects": [1, 2, 3],
+                "playerAnswers": [1, 3]
+                },
+                {
+                "questionId": 6,
+                "questionText": "Вопрос 6",
+                "answers": [
+                    {"answerNum": 1, "answerText": "Ответ 1"},
+                    {"answerNum": 2, "answerText": "Ответ 2"},
+                    {"answerNum": 3, "answerText": "Ответ 3"}
+                ],
+                "corrects": [2, 3],
+                "playerAnswers": [2, 3]
+                }
+            ]
+        }
+    },
+    {
+        "module": {
+            "name": "module_name_4",
+            "available": false,
+            "questions": [
+                {
+                "questionId": 7,
+                "questionText": "Вопрос 7",
+                "answers": [
+                    {"answerNum": 1, "answerText": "Ответ 1"},
+                    {"answerNum": 2, "answerText": "Ответ 2"},
+                    {"answerNum": 3, "answerText": "Ответ 3"}
+                ],
+                "corrects": [1, 2, 3],
+                "playerAnswers": [1, 3]
+                },
+                {
+                "questionId": 8,
+                "questionText": "Вопрос 8",
+                "answers": [
+                    {"answerNum": 1, "answerText": "Ответ 1"},
+                    {"answerNum": 2, "answerText": "Ответ 2"},
+                    {"answerNum": 3, "answerText": "Ответ 3"}
+                ],
+                "corrects": [2, 3],
+                "playerAnswers": [2, 3]
+                }
+            ]
+        }
+    }
+]
