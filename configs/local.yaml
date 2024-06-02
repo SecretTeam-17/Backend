@@ -3,7 +3,7 @@ storage_path: "./storage/storage.db" # путь к файлу БД или адр
 storage_passwd: "DB_PASSWD" # не используется в SQLite
 log_path: "LOG_FILE_PATH" # путь к файлу логов
 http_server:
-  address: "localhost:8082"
+  address: "localhost:8083"
   read_timeout: 5s
   write_timeout: 5s
   idle_timeout: 60s
