@@ -93,7 +93,7 @@ func New(log *slog.Logger, st SessionCreator) http.HandlerFunc {
 		// Записываем данные сессии в структуру Response
 		var resp rp.Response
 		resp.GameSession = *gs
-		w.WriteHeader(201)
+		render.Status(r, 201)
 		render.JSON(w, r, resp)
 	}
 }

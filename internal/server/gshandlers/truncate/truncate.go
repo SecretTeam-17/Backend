@@ -36,7 +36,7 @@ func New(log *slog.Logger, st DataTruncater) http.HandlerFunc {
 		log.Info("tables was truncated successfully")
 
 		// Возвращаем статус 204 и пустое тело
-		w.WriteHeader(204)
+		render.Status(r, 204)
 		render.NoContent(w, r)
 	}
 }

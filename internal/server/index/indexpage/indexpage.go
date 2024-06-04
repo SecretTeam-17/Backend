@@ -28,7 +28,7 @@ func New(log *slog.Logger) http.HandlerFunc {
 			render.PlainText(w, r, "Error, failed to read index.html")
 			return
 		}
-		w.WriteHeader(200)
+		render.Status(r, 200)
 		render.HTML(w, r, string(buf))
 	}
 }

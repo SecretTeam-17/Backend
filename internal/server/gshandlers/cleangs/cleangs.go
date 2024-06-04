@@ -58,7 +58,7 @@ func New(log *slog.Logger, st SessionCleaner) http.HandlerFunc {
 		// Записываем сессию в структуру Response
 		var resp rp.Response
 		resp.GameSession = *gs
-		w.WriteHeader(200)
+		render.Status(r, 200)
 		render.JSON(w, r, resp)
 	}
 }

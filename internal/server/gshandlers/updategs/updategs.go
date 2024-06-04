@@ -82,7 +82,7 @@ func New(log *slog.Logger, st SessionUpdater) http.HandlerFunc {
 		log.Info("game session updated", slog.Int("id", req.SessionID))
 
 		// Возвращаем статус 204 и пустое тело
-		w.WriteHeader(204)
+		render.Status(r, 204)
 		render.NoContent(w, r)
 	}
 }

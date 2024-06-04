@@ -55,7 +55,7 @@ func New(log *slog.Logger, st SessionDeleter) http.HandlerFunc {
 		log.Info("game session was deleted successfully", slog.Int("session_id", id))
 
 		// Возвращаем статус 204 и пустое тело
-		w.WriteHeader(204)
+		render.Status(r, 204)
 		render.NoContent(w, r)
 	}
 }

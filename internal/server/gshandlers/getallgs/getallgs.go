@@ -41,7 +41,7 @@ func New(log *slog.Logger, st AllSessions) http.HandlerFunc {
 		}
 
 		// Записываем слайс игровых сессий из БД в респонс
-		w.WriteHeader(200)
+		render.Status(r, 200)
 		render.JSON(w, r, resp)
 	}
 }

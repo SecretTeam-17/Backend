@@ -16,6 +16,7 @@ import (
 	"petsittersGameServer/internal/server/gshandlers/truncate"
 	"petsittersGameServer/internal/server/gshandlers/updategs"
 	"petsittersGameServer/internal/server/index/indexpage"
+	"petsittersGameServer/internal/server/middleware/cors"
 	"petsittersGameServer/internal/storage/sqlite"
 	"petsittersGameServer/internal/tools/stopsignal"
 	"time"
@@ -49,6 +50,7 @@ func main() {
 	// router.Use(middleware.RealIP)
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
+	router.Use(cors.Cors())
 	//router.Use(middleware.URLFormat)
 
 	router.Get("/", indexpage.New(log))
