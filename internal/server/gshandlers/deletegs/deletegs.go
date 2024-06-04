@@ -1,6 +1,7 @@
 package deletegs
 
 import (
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -14,11 +15,11 @@ import (
 )
 
 type SessionDeleter interface {
-	DeleteSessionById(id int) error
+	DeleteSessionById(ctx context.Context, id int) error
 }
 
 // New - возвращает новый хэндлер для удаления игровой сессии по id.
-func New(log *slog.Logger, st SessionDeleter) http.HandlerFunc {
+func New(ctx context.Context, log *slog.Logger, st SessionDeleter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.deletegs.New"
 
@@ -39,7 +40,7 @@ func New(log *slog.Logger, st SessionDeleter) http.HandlerFunc {
 		}
 
 		// Удаляем игровую сессию из БД
-		err = st.DeleteSessionById(id)
+		err = st.DeleteSessionById(ctx, id)
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.Int("session_id", id))
 			w.WriteHeader(404)

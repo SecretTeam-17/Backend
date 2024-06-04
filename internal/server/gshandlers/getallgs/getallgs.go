@@ -1,6 +1,7 @@
 package getallgs
 
 import (
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -11,11 +12,11 @@ import (
 )
 
 type AllSessions interface {
-	GetSessions() ([]storage.GameSession, error)
+	GetSessions(ctx context.Context) ([]storage.GameSession, error)
 }
 
 // New - возвращает новый хэндлер для получения всех игровых сессий.
-func New(log *slog.Logger, st AllSessions) http.HandlerFunc {
+func New(ctx context.Context, log *slog.Logger, st AllSessions) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.getallgs.New"
 
@@ -26,7 +27,7 @@ func New(log *slog.Logger, st AllSessions) http.HandlerFunc {
 		log.Info("new request to receive all game sessions")
 
 		// Получаем слайс всех игровых сессий из БД
-		resp, err := st.GetSessions()
+		resp, err := st.GetSessions(ctx)
 		if errors.Is(err, storage.ErrSessionsEmpty) {
 			log.Error("game sessions not found")
 			w.WriteHeader(404)

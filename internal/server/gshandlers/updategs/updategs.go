@@ -1,6 +1,7 @@
 package updategs
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -16,11 +17,11 @@ import (
 )
 
 type SessionUpdater interface {
-	UpdateSession(gs storage.GameSession) error
+	UpdateSession(ctx context.Context, gs storage.GameSession) error
 }
 
 // New - возвращает новый хэндлер для обновления игровой сессии.
-func New(log *slog.Logger, st SessionUpdater) http.HandlerFunc {
+func New(ctx context.Context, log *slog.Logger, st SessionUpdater) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.updategs.New"
 
@@ -60,7 +61,7 @@ func New(log *slog.Logger, st SessionUpdater) http.HandlerFunc {
 		}
 
 		// Обновляем игровую сессию в БД
-		err = st.UpdateSession(req)
+		err = st.UpdateSession(ctx, req)
 		if errors.Is(err, storage.ErrModuleNotFound) {
 			log.Error("incorrect module", slog.Int("module", req.CurrentModule))
 			w.WriteHeader(422)

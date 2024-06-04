@@ -1,6 +1,7 @@
 package truncate
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -10,11 +11,11 @@ import (
 )
 
 type DataTruncater interface {
-	TruncateTables() error
+	TruncateTables(ctx context.Context) error
 }
 
 // New - возвращает новый хэндлер для удаления всех данных из таблиц игроков и игровых сессий.
-func New(log *slog.Logger, st DataTruncater) http.HandlerFunc {
+func New(ctx context.Context, log *slog.Logger, st DataTruncater) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.truncate.New"
 
@@ -25,7 +26,7 @@ func New(log *slog.Logger, st DataTruncater) http.HandlerFunc {
 		log.Info("new request to truncate tables")
 
 		// Выполняем очистку таблиц
-		err := st.TruncateTables()
+		err := st.TruncateTables(ctx)
 		if err != nil {
 			fmt.Println(err)
 			log.Error("failed to truncate tables")

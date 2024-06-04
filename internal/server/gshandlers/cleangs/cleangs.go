@@ -1,6 +1,7 @@
 package cleangs
 
 import (
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -15,11 +16,11 @@ import (
 )
 
 type SessionCleaner interface {
-	CleanSession(id int) (*storage.GameSession, error)
+	CleanSession(ctx context.Context, id int) (*storage.GameSession, error)
 }
 
 // New - возвращает новый хэндлер для очистки игровой сессии по id.
-func New(log *slog.Logger, st SessionCleaner) http.HandlerFunc {
+func New(ctx context.Context, log *slog.Logger, st SessionCleaner) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.cleangs.New"
 
@@ -40,7 +41,7 @@ func New(log *slog.Logger, st SessionCleaner) http.HandlerFunc {
 		}
 
 		// Получаем очищенную игровую сессию из БД
-		gs, err := st.CleanSession(id)
+		gs, err := st.CleanSession(ctx, id)
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.Int("session_id", id))
 			w.WriteHeader(404)

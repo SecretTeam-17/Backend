@@ -1,6 +1,7 @@
 package creategs
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -24,11 +25,11 @@ type Request struct {
 
 // Возможно, интерфейсы хранилища лучше перенести в пакет storage
 type SessionCreator interface {
-	CreateSession(name, email string) (*storage.GameSession, error)
+	CreateSession(ctx context.Context, name, email string) (*storage.GameSession, error)
 }
 
 // New - возвращает новый хэндлер для создания игровой сессии.
-func New(log *slog.Logger, st SessionCreator) http.HandlerFunc {
+func New(ctx context.Context, log *slog.Logger, st SessionCreator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.creategs.New"
 
@@ -68,7 +69,7 @@ func New(log *slog.Logger, st SessionCreator) http.HandlerFunc {
 		}
 
 		// Создаем нового юзера и игровую сессию по данным из запроса
-		gs, err := st.CreateSession(req.Name, req.Email)
+		gs, err := st.CreateSession(ctx, req.Name, req.Email)
 		if errors.Is(err, storage.ErrUserExists) {
 			log.Error("user already exists", slog.String("email", req.Email))
 			w.WriteHeader(422)
@@ -89,7 +90,6 @@ func New(log *slog.Logger, st SessionCreator) http.HandlerFunc {
 		}
 		log.Info("new gameSession created", slog.Int("id", gs.SessionID))
 
-		// TODO: cookie
 		// Записываем данные сессии в структуру Response
 		var resp rp.Response
 		resp.GameSession = *gs

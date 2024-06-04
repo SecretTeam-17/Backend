@@ -1,6 +1,7 @@
 package getgsid
 
 import (
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -15,11 +16,11 @@ import (
 )
 
 type SessionById interface {
-	GetSessionById(id int) (*storage.GameSession, error)
+	GetSessionById(ctx context.Context, id int) (*storage.GameSession, error)
 }
 
 // New - возвращает новый хэндлер для получения игровой сессии по id.
-func New(log *slog.Logger, st SessionById) http.HandlerFunc {
+func New(ctx context.Context, log *slog.Logger, st SessionById) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.getgsid.New"
 
@@ -40,7 +41,7 @@ func New(log *slog.Logger, st SessionById) http.HandlerFunc {
 		}
 
 		// Получаем игровую сессию из БД по ее id
-		gs, err := st.GetSessionById(id)
+		gs, err := st.GetSessionById(ctx, id)
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.Int("session_id", id))
 			w.WriteHeader(404)

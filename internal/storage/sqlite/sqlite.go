@@ -26,8 +26,6 @@ func New(storagePath string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 
-	// TODO: добавить таблицу с введенными игроком ответами
-
 	// Начинаем транзакцию
 	tx, err := db.Begin()
 	defer tx.Rollback()

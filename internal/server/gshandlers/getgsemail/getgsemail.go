@@ -1,6 +1,7 @@
 package getgsemail
 
 import (
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -15,11 +16,11 @@ import (
 )
 
 type SessionByEmail interface {
-	GetSessionByEmail(email string) (*storage.GameSession, error)
+	GetSessionByEmail(ctx context.Context, email string) (*storage.GameSession, error)
 }
 
 // New - возвращает новый хэндлер для получения игровой сессии по email.
-func New(log *slog.Logger, st SessionByEmail) http.HandlerFunc {
+func New(ctx context.Context, log *slog.Logger, st SessionByEmail) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.getgsemail.New"
 
@@ -41,7 +42,7 @@ func New(log *slog.Logger, st SessionByEmail) http.HandlerFunc {
 		}
 
 		// Получаем игровую сессию из БД по email ее юзера
-		gs, err := st.GetSessionByEmail(email)
+		gs, err := st.GetSessionByEmail(ctx, email)
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.String("user_email", email))
 			w.WriteHeader(404)
