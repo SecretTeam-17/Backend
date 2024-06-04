@@ -5,5 +5,5 @@ log_path: "LOG_FILE_PATH" # путь к файлу логов
 http_server:
   address: "0.0.0.0:8083"
   read_timeout: 5s
-  write_timeout: 5s
+  write_timeout: 10s
   idle_timeout: 60s

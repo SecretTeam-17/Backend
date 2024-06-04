@@ -4,6 +4,6 @@ storage_passwd: "DB_PASSWD" # не используется в SQLite
 log_path: "LOG_FILE_PATH" # путь к файлу логов
 http_server:
   address: "0.0.0.0:8080"
-  read_timeout: 4s
-  write_timeout: 4s
+  read_timeout: 5s
+  write_timeout: 10s
   idle_timeout: 30s
