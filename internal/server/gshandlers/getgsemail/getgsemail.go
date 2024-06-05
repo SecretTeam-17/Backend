@@ -60,7 +60,7 @@ func New(ctx context.Context, log *slog.Logger, st SessionByEmail) http.HandlerF
 			return
 		}
 		if err != nil {
-			log.Error("failed to receive a game session", slog.String("user_email", email))
+			log.Error("failed to receive a game session", slog.String("user_email", email), logger.Err(err))
 			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to receive a game session: unknown error")
 			return

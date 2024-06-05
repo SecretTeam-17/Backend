@@ -1,9 +1,12 @@
 package sqlite
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"petsittersGameServer/internal/storage"
+	"strings"
 )
 
 // CreateSession - создает в базе данных нового юзера и игровую сессию для него.
@@ -33,9 +36,9 @@ func (s *Storage) CreateSession(ctx context.Context, name, email string) (*stora
 	// Создаем строку в таблице game_sessions, вставляем туда id игрока и возвращаем все атрибуты.
 	// Записываем их в структуру
 	err = tx.QueryRowContext(ctx, `
-		INSERT INTO game_sessions (user_id) VALUES (?) RETURNING 
-		id, created_at, updated_at, current_module, completed, any_field_one, any_field_two, modules, minigame;
-	`, gs.UserID).Scan(
+		INSERT INTO game_sessions (user_id, modules) VALUES (?, ?) RETURNING 
+		id, created_at, updated_at, current_module, completed, any_field_one, any_field_two, minigame;
+	`, gs.UserID, s.modules).Scan(
 		&gs.SessionID,
 		&gs.CreatedAt,
 		&gs.UpdatedAt,
@@ -43,12 +46,16 @@ func (s *Storage) CreateSession(ctx context.Context, name, email string) (*stora
 		&gs.Completed,
 		&gs.AnyFieldOne,
 		&gs.AnyFieldTwo,
-		&gs.Modules,
 		&gs.Minigame,
 	)
 	// Распознаем ошибки из БД и приводим их в более наглядый вид
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, checkDBError(err))
+	}
+	// Декодируем json модулей в структуру
+	err = json.Unmarshal([]byte(s.modules), &gs.Modules)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 
 	// Подтверждаем транзакцию
@@ -64,6 +71,7 @@ func (s *Storage) CreateSession(ctx context.Context, name, email string) (*stora
 func (s *Storage) GetSessionById(ctx context.Context, id int) (*storage.GameSession, error) {
 	const operation = "storage.sqlite.GetSessionById"
 	var gs storage.GameSession
+	var mod string
 
 	// Выполняем запрос и записываем результат в структуру GameSession
 	err := s.db.QueryRowContext(ctx, `
@@ -85,11 +93,16 @@ func (s *Storage) GetSessionById(ctx context.Context, id int) (*storage.GameSess
 		&gs.Completed,
 		&gs.AnyFieldOne,
 		&gs.AnyFieldTwo,
-		&gs.Modules,
+		&mod,
 		&gs.Minigame,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, checkDBError(err))
+	}
+	// Декодируем json модулей в структуру
+	err = json.Unmarshal([]byte(mod), &gs.Modules)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 
 	return &gs, nil
@@ -99,6 +112,7 @@ func (s *Storage) GetSessionById(ctx context.Context, id int) (*storage.GameSess
 func (s *Storage) GetSessionByEmail(ctx context.Context, email string) (*storage.GameSession, error) {
 	const operation = "storage.sqlite.GetSessionByEmail"
 	var gs storage.GameSession
+	var mod string
 
 	// Выполняем запрос и записываем результат в структуру GameSession
 	err := s.db.QueryRowContext(ctx, `
@@ -120,11 +134,16 @@ func (s *Storage) GetSessionByEmail(ctx context.Context, email string) (*storage
 		&gs.Completed,
 		&gs.AnyFieldOne,
 		&gs.AnyFieldTwo,
-		&gs.Modules,
+		&mod,
 		&gs.Minigame,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, checkDBError(err))
+	}
+	// Декодируем json модулей в структуру
+	err = json.Unmarshal([]byte(mod), &gs.Modules)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 
 	return &gs, nil
@@ -150,6 +169,7 @@ func (s *Storage) GetSessions(ctx context.Context) ([]storage.GameSession, error
 	}
 	for rows.Next() {
 		var gs storage.GameSession
+		var mod string
 		err := rows.Scan(
 			&gs.SessionID,
 			&gs.UserID,
@@ -161,11 +181,17 @@ func (s *Storage) GetSessions(ctx context.Context) ([]storage.GameSession, error
 			&gs.Completed,
 			&gs.AnyFieldOne,
 			&gs.AnyFieldTwo,
-			&gs.Modules,
+			&mod,
 			&gs.Minigame,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", operation, checkDBError(err))
+		}
+		fmt.Println(mod)
+		// Декодируем json модулей в структуру
+		err = json.Unmarshal([]byte(mod), &gs.Modules)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", operation, err)
 		}
 		arr = append(arr, gs)
 	}
@@ -180,6 +206,7 @@ func (s *Storage) GetSessions(ctx context.Context) ([]storage.GameSession, error
 func (s *Storage) CleanSession(ctx context.Context, id int) (*storage.GameSession, error) {
 	const operation = "storage.sqlite.CleanSession"
 	var gs storage.GameSession
+	var mod string
 
 	// Начинаем транзакцию
 	tx, err := s.db.BeginTx(ctx, nil)
@@ -196,10 +223,10 @@ func (s *Storage) CleanSession(ctx context.Context, id int) (*storage.GameSessio
 		completed = false,
 		any_field_one = '',
 		any_field_two = '',
-		modules = '',
+		modules = (?),
 		minigame = '' 
 		WHERE id = (?);
-	`, id)
+	`, s.modules, id)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
@@ -227,11 +254,16 @@ func (s *Storage) CleanSession(ctx context.Context, id int) (*storage.GameSessio
 		&gs.Completed,
 		&gs.AnyFieldOne,
 		&gs.AnyFieldTwo,
-		&gs.Modules,
+		&mod,
 		&gs.Minigame,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, checkDBError(err))
+	}
+	// Декодируем json модулей в структуру
+	err = json.Unmarshal([]byte(mod), &gs.Modules)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 
 	// Подтверждаем транзакцию
@@ -255,14 +287,19 @@ func (s *Storage) UpdateSession(ctx context.Context, gs storage.GameSession) err
 	}
 
 	// Проверка наличия модуля.
-	// Костыль, так как в SQLite по дефолту не включена поддержка foreign keys.
-	// Вернет ошибку, если попытаться вставить в current_module несуществующий в БД модуль
-	rows, err := tx.QueryContext(ctx, `
-		SELECT * FROM modules WHERE id = (?);
-	`, gs.CurrentModule)
-	if !rows.Next() {
+	// Вернет ошибку, если попытаться вставить в current_module номер несуществующего модуля
+	count := strings.Count(s.modules, "module_name")
+	if gs.CurrentModule < 1 || gs.CurrentModule > count {
 		return fmt.Errorf("%s: %w", operation, storage.ErrModuleNotFound)
 	}
+
+	// Подготавливаем строку modules для записи в БД
+	mod, err := json.Marshal(gs.Modules)
+	if err != nil {
+		return fmt.Errorf("%s: %w", operation, err)
+	}
+	buf := new(bytes.Buffer)
+	err = json.Compact(buf, mod)
 	if err != nil {
 		return fmt.Errorf("%s: %w", operation, err)
 	}
@@ -283,7 +320,7 @@ func (s *Storage) UpdateSession(ctx context.Context, gs storage.GameSession) err
 		gs.Completed,
 		gs.AnyFieldOne,
 		gs.AnyFieldTwo,
-		gs.Modules,
+		buf.String(),
 		gs.Minigame,
 		gs.SessionID,
 	)

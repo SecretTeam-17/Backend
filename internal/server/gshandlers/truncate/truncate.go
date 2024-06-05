@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"petsittersGameServer/internal/logger"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -29,7 +30,7 @@ func New(ctx context.Context, log *slog.Logger, st DataTruncater) http.HandlerFu
 		err := st.TruncateTables(ctx)
 		if err != nil {
 			fmt.Println(err)
-			log.Error("failed to truncate tables")
+			log.Error("failed to truncate tables", logger.Err(err))
 			render.Status(r, 500)
 			render.PlainText(w, r, "Error, failed to truncate tables: unknown error")
 			return

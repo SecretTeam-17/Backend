@@ -16,14 +16,14 @@ var (
 type GameSession struct {
 	SessionID int `json:"id" validate:"required"`
 	User
-	CreatedAt     string `json:"createdAt"`
-	UpdatedAt     string `json:"updatedAt"`
-	CurrentModule int    `json:"currentModule" validate:"required"`
-	Completed     bool   `json:"completed"`
-	AnyFieldOne   string `json:"anyFieldOne"`
-	AnyFieldTwo   string `json:"anyFieldTwo"`
-	Modules       string `json:"modules"`
-	Minigame      string `json:"minigame"`
+	CreatedAt     string   `json:"createdAt"`
+	UpdatedAt     string   `json:"updatedAt"`
+	CurrentModule int      `json:"currentModule" validate:"required"`
+	Completed     bool     `json:"completed"`
+	AnyFieldOne   string   `json:"anyFieldOne"`
+	AnyFieldTwo   string   `json:"anyFieldTwo"`
+	Modules       []Module `json:"modules"`
+	Minigame      string   `json:"minigame"`
 }
 
 // User - структура пользователя.
@@ -33,23 +33,21 @@ type User struct {
 	Email    string `json:"email"`
 }
 
-type Modules []Module
-
 type Module struct {
-	Name      string
-	Available bool
-	Questions []Question
+	Name      string     `json:"name"`
+	Available bool       `json:"available"`
+	Questions []Question `json:"questions"`
 }
 
 type Question struct {
-	QuestionId    int
-	QuestionText  string
-	Answers       []Answer
-	Corrects      []int
-	PlayerAnswers []int
+	QuestionId    int      `json:"questionId"`
+	QuestionText  string   `json:"questionText"`
+	Answers       []Answer `json:"answers"`
+	Corrects      []int    `json:"corrects"`
+	PlayerAnswers []int    `json:"playerAnswers"`
 }
 
 type Answer struct {
-	AnswerNum  int
-	AnswerText string
+	AnswerNum  int    `json:"answerNum"`
+	AnswerText string `json:"answerText"`
 }

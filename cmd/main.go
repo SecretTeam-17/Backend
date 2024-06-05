@@ -35,7 +35,7 @@ func main() {
 	log.Debug("logger initialized")
 
 	// Инициализируем пул подключений к базе данных
-	storage, err := sqlite.New(cfg.StoragePath)
+	storage, err := sqlite.New(cfg.StoragePath, cfg.ModulesPath)
 	if err != nil {
 		log.Error("failed to init storage", logger.Err(err))
 		os.Exit(1)

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"petsittersGameServer/internal/logger"
 	"petsittersGameServer/internal/storage"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -35,7 +36,7 @@ func New(ctx context.Context, log *slog.Logger, st AllSessions) http.HandlerFunc
 			return
 		}
 		if err != nil {
-			log.Error("failed to receive all game sessions")
+			log.Error("failed to receive all game sessions", logger.Err(err))
 			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to receive all game sessions: unknown error")
 			return
