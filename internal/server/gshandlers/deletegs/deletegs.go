@@ -34,7 +34,7 @@ func New(ctx context.Context, log *slog.Logger, st SessionDeleter) http.HandlerF
 		id, err := strconv.Atoi(param)
 		if err != nil {
 			log.Error("invalid game session id", logger.Err(err))
-			w.WriteHeader(400)
+			render.Status(r, 400)
 			render.PlainText(w, r, "Error, failed to delete a game session: incorrect id")
 			return
 		}
@@ -43,13 +43,13 @@ func New(ctx context.Context, log *slog.Logger, st SessionDeleter) http.HandlerF
 		err = st.DeleteSessionById(ctx, id)
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.Int("session_id", id))
-			w.WriteHeader(404)
+			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to delete a game session: id not found")
 			return
 		}
 		if err != nil {
 			log.Error("failed to delete a game session", slog.Int("session_id", id))
-			w.WriteHeader(404)
+			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to delete a game session: unknown error")
 			return
 		}

@@ -35,7 +35,7 @@ func New(ctx context.Context, log *slog.Logger, st SessionById) http.HandlerFunc
 		id, err := strconv.Atoi(param)
 		if err != nil {
 			log.Error("invalid game session id", logger.Err(err))
-			w.WriteHeader(400)
+			render.Status(r, 400)
 			render.PlainText(w, r, "Error, failed to receive a game session: incorrect id")
 			return
 		}
@@ -44,13 +44,13 @@ func New(ctx context.Context, log *slog.Logger, st SessionById) http.HandlerFunc
 		gs, err := st.GetSessionById(ctx, id)
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.Int("session_id", id))
-			w.WriteHeader(404)
+			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to receive a game session: id not found")
 			return
 		}
 		if err != nil {
 			log.Error("failed to receive a game session", slog.Int("session_id", id))
-			w.WriteHeader(404)
+			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to receive a game session: unknown error")
 			return
 		}

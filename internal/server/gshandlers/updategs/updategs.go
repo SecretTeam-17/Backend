@@ -36,13 +36,13 @@ func New(ctx context.Context, log *slog.Logger, st SessionUpdater) http.HandlerF
 		err := render.DecodeJSON(r.Body, &req)
 		if errors.Is(err, io.EOF) {
 			log.Error("request body is empty")
-			w.WriteHeader(400)
+			render.Status(r, 400)
 			render.PlainText(w, r, "Error, failed to update a game session: empty request")
 			return
 		}
 		if err != nil {
 			log.Error("failed to decode request body", logger.Err(err))
-			w.WriteHeader(400)
+			render.Status(r, 400)
 			render.PlainText(w, r, "Error, failed to update a game session: failed to decode request")
 			return
 		}
@@ -54,7 +54,7 @@ func New(ctx context.Context, log *slog.Logger, st SessionUpdater) http.HandlerF
 		if err != nil {
 			validateErr := err.(validator.ValidationErrors)
 			log.Error("invalid request", logger.Err(err))
-			w.WriteHeader(422)
+			render.Status(r, 422)
 			str := fmt.Sprintf("Error, failed to update a game session: %s", api.ValidationError(validateErr))
 			render.PlainText(w, r, str)
 			return
@@ -64,19 +64,19 @@ func New(ctx context.Context, log *slog.Logger, st SessionUpdater) http.HandlerF
 		err = st.UpdateSession(ctx, req)
 		if errors.Is(err, storage.ErrModuleNotFound) {
 			log.Error("incorrect module", slog.Int("module", req.CurrentModule))
-			w.WriteHeader(422)
+			render.Status(r, 422)
 			render.PlainText(w, r, "Error, to update a game session: module not found in database")
 			return
 		}
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.Int("session_id", req.SessionID))
-			w.WriteHeader(404)
+			render.Status(r, 422)
 			render.PlainText(w, r, "Error, to update a game session: id not found")
 			return
 		}
 		if err != nil {
 			log.Error("failed to update a game session", logger.Err(err))
-			w.WriteHeader(422)
+			render.Status(r, 422)
 			render.PlainText(w, r, "Error, failed to update a game session: unknown error")
 			return
 		}

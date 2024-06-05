@@ -11,6 +11,7 @@ import (
 	rp "petsittersGameServer/internal/server/gshandlers/response"
 	"petsittersGameServer/internal/storage"
 	"petsittersGameServer/internal/tools/api"
+	"strings"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -44,13 +45,13 @@ func New(ctx context.Context, log *slog.Logger, st SessionCreator) http.HandlerF
 		err := render.DecodeJSON(r.Body, &req)
 		if errors.Is(err, io.EOF) {
 			log.Error("request body is empty")
-			w.WriteHeader(400)
+			render.Status(r, 400)
 			render.PlainText(w, r, "Error, failed to create new gameSession: empty request")
 			return
 		}
 		if err != nil {
 			log.Error("failed to decode request body", logger.Err(err))
-			w.WriteHeader(400)
+			render.Status(r, 400)
 			render.PlainText(w, r, "Error, failed to create new gameSession: failed to decode request")
 			return
 		}
@@ -62,29 +63,30 @@ func New(ctx context.Context, log *slog.Logger, st SessionCreator) http.HandlerF
 		if err != nil {
 			validateErr := err.(validator.ValidationErrors)
 			log.Error("invalid request", logger.Err(err))
-			w.WriteHeader(422)
+			render.Status(r, 422)
 			str := fmt.Sprintf("Error, failed to create new gameSession: %s", api.ValidationError(validateErr))
 			render.PlainText(w, r, str)
 			return
 		}
+		req.Email = strings.ToLower(req.Email)
 
 		// Создаем нового юзера и игровую сессию по данным из запроса
 		gs, err := st.CreateSession(ctx, req.Name, req.Email)
 		if errors.Is(err, storage.ErrUserExists) {
 			log.Error("user already exists", slog.String("email", req.Email))
-			w.WriteHeader(422)
+			render.Status(r, 422)
 			render.PlainText(w, r, "Error, failed to create new gameSession: user already exists")
 			return
 		}
 		if errors.Is(err, storage.ErrInput) {
 			log.Error("incorrect input user data", slog.String("name", req.Name), slog.String("email", req.Email))
-			w.WriteHeader(422)
+			render.Status(r, 422)
 			render.PlainText(w, r, "Error, failed to create new gameSession: incorrect input user data")
 			return
 		}
 		if err != nil {
 			log.Error("failed to create gameSession", logger.Err(err))
-			w.WriteHeader(422)
+			render.Status(r, 422)
 			render.PlainText(w, r, "Error, failed to create new gameSession: unknown error")
 			return
 		}

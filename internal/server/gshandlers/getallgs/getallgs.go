@@ -30,13 +30,13 @@ func New(ctx context.Context, log *slog.Logger, st AllSessions) http.HandlerFunc
 		resp, err := st.GetSessions(ctx)
 		if errors.Is(err, storage.ErrSessionsEmpty) {
 			log.Error("game sessions not found")
-			w.WriteHeader(404)
+			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to receive all game session: table is empty")
 			return
 		}
 		if err != nil {
 			log.Error("failed to receive all game sessions")
-			w.WriteHeader(404)
+			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to receive all game sessions: unknown error")
 			return
 		}

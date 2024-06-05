@@ -30,7 +30,7 @@ func New(ctx context.Context, log *slog.Logger, st DataTruncater) http.HandlerFu
 		if err != nil {
 			fmt.Println(err)
 			log.Error("failed to truncate tables")
-			w.WriteHeader(500)
+			render.Status(r, 500)
 			render.PlainText(w, r, "Error, failed to truncate tables: unknown error")
 			return
 		}

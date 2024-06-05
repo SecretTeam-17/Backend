@@ -5,9 +5,11 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"petsittersGameServer/internal/logger"
 	rp "petsittersGameServer/internal/server/gshandlers/response"
 	"petsittersGameServer/internal/storage"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -32,11 +34,19 @@ func New(ctx context.Context, log *slog.Logger, st SessionByEmail) http.HandlerF
 
 		// Получаем параметр из запроса и валидируем его к формату электронной почты
 		email := chi.URLParam(r, "email")
+		email, err := url.QueryUnescape(email)
+		if err != nil {
+			log.Error("failed to decode email in URL")
+			render.Status(r, 400)
+			render.PlainText(w, r, "Error, failed to decode email in URL: incorrect email")
+			return
+		}
+		email = strings.ToLower(email)
 		valid := validator.New()
-		err := valid.Var(email, "required,email")
+		err = valid.Var(email, "required,email")
 		if err != nil {
 			log.Error("invalid user email", logger.Err(err))
-			w.WriteHeader(422)
+			render.Status(r, 422)
 			render.PlainText(w, r, "Error, failed to receive a game session: incorrect email")
 			return
 		}
@@ -45,13 +55,13 @@ func New(ctx context.Context, log *slog.Logger, st SessionByEmail) http.HandlerF
 		gs, err := st.GetSessionByEmail(ctx, email)
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.String("user_email", email))
-			w.WriteHeader(404)
+			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to receive a game session: user email not found")
 			return
 		}
 		if err != nil {
 			log.Error("failed to receive a game session", slog.String("user_email", email))
-			w.WriteHeader(404)
+			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to receive a game session: unknown error")
 			return
 		}
