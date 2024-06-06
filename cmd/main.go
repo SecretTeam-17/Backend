@@ -53,20 +53,20 @@ func main() {
 	router.Use(cors.Cors())
 	//router.Use(middleware.URLFormat)
 
-	router.Get("/", indexpage.New(log))
+	router.Get("/", indexpage.New(*log))
 
 	// Объявляем REST API хэндлеры для работы со структурой GameSession
-	router.Get("/api/session/id/{id}", getgsid.New(context.TODO(), log, storage))
-	router.Get("/api/session/email/{email}", getgsemail.New(context.TODO(), log, storage))
-	router.Get("/api/session/all", getallgs.New(context.TODO(), log, storage))
-	router.Get("/api/session/new/{id}", cleangs.New(context.TODO(), log, storage))
+	router.Get("/api/session/id/{id}", getgsid.New(context.TODO(), *log, storage))
+	router.Get("/api/session/email/{email}", getgsemail.New(context.TODO(), *log, storage))
+	router.Get("/api/session/all", getallgs.New(context.TODO(), *log, storage))
+	router.Get("/api/session/new/{id}", cleangs.New(context.TODO(), *log, storage))
 
-	router.Post("/api/session", creategs.New(context.TODO(), log, storage))
+	router.Post("/api/session", creategs.New(context.TODO(), *log, storage))
 
-	router.Put("/api/session", updategs.New(context.TODO(), log, storage))
+	router.Put("/api/session", updategs.New(context.TODO(), *log, storage))
 
-	router.Delete("/api/session/id/{id}", deletegs.New(context.TODO(), log, storage))
-	router.Delete("/api/session/verydangerousbutton", truncate.New(context.TODO(), log, storage)) // Для тестирования
+	router.Delete("/api/session/id/{id}", deletegs.New(context.TODO(), *log, storage))
+	router.Delete("/api/session/verydangerousbutton", truncate.New(context.TODO(), *log, storage)) // Для тестирования
 
 	// Конфигурируем сервер из данных конфиг файла
 	srv := &http.Server{

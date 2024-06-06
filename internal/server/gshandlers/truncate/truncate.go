@@ -16,10 +16,11 @@ type DataTruncater interface {
 }
 
 // New - возвращает новый хэндлер для удаления всех данных из таблиц игроков и игровых сессий.
-func New(ctx context.Context, log *slog.Logger, st DataTruncater) http.HandlerFunc {
+func New(ctx context.Context, alog slog.Logger, st DataTruncater) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.truncate.New"
 
+		log := &alog
 		log = log.With(
 			slog.String("op", operation),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -40,5 +41,6 @@ func New(ctx context.Context, log *slog.Logger, st DataTruncater) http.HandlerFu
 		// Возвращаем статус 204 и пустое тело
 		render.Status(r, 204)
 		render.NoContent(w, r)
+		log = nil
 	}
 }

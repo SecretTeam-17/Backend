@@ -194,7 +194,6 @@ func (s *Storage) GetSessions(ctx context.Context) ([]storage.GameSession, error
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", operation, checkDBError(err))
 		}
-		fmt.Println(mod)
 		// Декодируем json модулей в структуру
 		err = json.Unmarshal([]byte(mod), &gs.Modules)
 		if err != nil {

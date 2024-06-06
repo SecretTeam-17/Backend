@@ -21,10 +21,11 @@ type SessionUpdater interface {
 }
 
 // New - возвращает новый хэндлер для обновления игровой сессии.
-func New(ctx context.Context, log *slog.Logger, st SessionUpdater) http.HandlerFunc {
+func New(ctx context.Context, alog slog.Logger, st SessionUpdater) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.updategs.New"
 
+		log := &alog
 		log = log.With(
 			slog.String("op", operation),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -85,5 +86,6 @@ func New(ctx context.Context, log *slog.Logger, st SessionUpdater) http.HandlerF
 		// Возвращаем статус 204 и пустое тело
 		render.Status(r, 204)
 		render.NoContent(w, r)
+		log = nil
 	}
 }

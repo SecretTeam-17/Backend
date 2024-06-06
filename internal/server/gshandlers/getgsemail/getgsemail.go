@@ -22,10 +22,11 @@ type SessionByEmail interface {
 }
 
 // New - возвращает новый хэндлер для получения игровой сессии по email.
-func New(ctx context.Context, log *slog.Logger, st SessionByEmail) http.HandlerFunc {
+func New(ctx context.Context, alog slog.Logger, st SessionByEmail) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.getgsemail.New"
 
+		log := &alog
 		log = log.With(
 			slog.String("op", operation),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -72,5 +73,6 @@ func New(ctx context.Context, log *slog.Logger, st SessionByEmail) http.HandlerF
 		resp.GameSession = *gs
 		render.Status(r, 200)
 		render.JSON(w, r, resp)
+		log = nil
 	}
 }

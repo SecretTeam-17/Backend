@@ -20,10 +20,11 @@ type SessionCleaner interface {
 }
 
 // New - возвращает новый хэндлер для очистки игровой сессии по id.
-func New(ctx context.Context, log *slog.Logger, st SessionCleaner) http.HandlerFunc {
+func New(ctx context.Context, alog slog.Logger, st SessionCleaner) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.cleangs.New"
 
+		log := &alog
 		log = log.With(
 			slog.String("op", operation),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -61,5 +62,6 @@ func New(ctx context.Context, log *slog.Logger, st SessionCleaner) http.HandlerF
 		resp.GameSession = *gs
 		render.Status(r, 200)
 		render.JSON(w, r, resp)
+		log = nil
 	}
 }
