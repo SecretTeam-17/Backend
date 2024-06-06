@@ -12,8 +12,15 @@ import (
 // CreateSession - создает в базе данных нового юзера и игровую сессию для него.
 func (s *Storage) CreateSession(ctx context.Context, name, email string) (*storage.GameSession, error) {
 	const operation = "storage.sqlite.CreateSession"
-	var gs storage.GameSession
 
+	// При POST запросе на создание нового игрока проверяем email. Если такой игрок уже сущетсвует,
+	// то возвращаем его игровую сессию
+	res, err := s.GetSessionByEmail(ctx, email)
+	if err == nil {
+		return res, storage.ErrUserExists
+	}
+
+	var gs storage.GameSession
 	// Начинаем транзакцию
 	tx, err := s.db.BeginTx(ctx, nil)
 	defer tx.Rollback()
