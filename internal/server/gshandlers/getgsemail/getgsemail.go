@@ -22,7 +22,7 @@ type SessionByEmail interface {
 }
 
 // New - возвращает новый хэндлер для получения игровой сессии по email.
-func New(ctx context.Context, alog slog.Logger, st SessionByEmail) http.HandlerFunc {
+func New(alog slog.Logger, st SessionByEmail) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.getgsemail.New"
 
@@ -51,6 +51,8 @@ func New(ctx context.Context, alog slog.Logger, st SessionByEmail) http.HandlerF
 			render.PlainText(w, r, "Error, failed to receive a game session: incorrect email")
 			return
 		}
+
+		ctx := r.Context()
 
 		// Получаем игровую сессию из БД по email ее юзера
 		gs, err := st.GetSessionByEmail(ctx, email)

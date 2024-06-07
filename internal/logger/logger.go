@@ -35,7 +35,6 @@ func SetupLogger(env string) *slog.Logger {
 		)
 	}
 
-	// TODO: добавить логирование в файл
 	return log
 }
 

@@ -17,7 +17,7 @@ type AllSessions interface {
 }
 
 // New - возвращает новый хэндлер для получения всех игровых сессий.
-func New(ctx context.Context, alog slog.Logger, st AllSessions) http.HandlerFunc {
+func New(alog slog.Logger, st AllSessions) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.getallgs.New"
 
@@ -27,6 +27,8 @@ func New(ctx context.Context, alog slog.Logger, st AllSessions) http.HandlerFunc
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 		log.Info("new request to receive all game sessions")
+
+		ctx := r.Context()
 
 		// Получаем слайс всех игровых сессий из БД
 		resp, err := st.GetSessions(ctx)

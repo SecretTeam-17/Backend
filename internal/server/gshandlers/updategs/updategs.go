@@ -21,7 +21,7 @@ type SessionUpdater interface {
 }
 
 // New - возвращает новый хэндлер для обновления игровой сессии.
-func New(ctx context.Context, alog slog.Logger, st SessionUpdater) http.HandlerFunc {
+func New(alog slog.Logger, st SessionUpdater) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.updategs.New"
 
@@ -47,7 +47,7 @@ func New(ctx context.Context, alog slog.Logger, st SessionUpdater) http.HandlerF
 			render.PlainText(w, r, "Error, failed to update a game session: failed to decode request")
 			return
 		}
-		log.Info("request body decoded", slog.Any("request", req))
+		log.Info("request body decoded")
 
 		// Валидация полей json из запроса
 		valid := validator.New()
@@ -60,6 +60,8 @@ func New(ctx context.Context, alog slog.Logger, st SessionUpdater) http.HandlerF
 			render.PlainText(w, r, str)
 			return
 		}
+
+		ctx := r.Context()
 
 		// Обновляем игровую сессию в БД
 		err = st.UpdateSession(ctx, req)

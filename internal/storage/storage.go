@@ -1,6 +1,9 @@
 package storage
 
-import "errors"
+import (
+	"encoding/json"
+	"errors"
+)
 
 // Ошибки при работе с БД
 var (
@@ -16,14 +19,14 @@ var (
 type GameSession struct {
 	SessionID int `json:"id" validate:"required"`
 	User
-	CreatedAt     string   `json:"createdAt"`
-	UpdatedAt     string   `json:"updatedAt"`
-	CurrentModule int      `json:"currentModule" validate:"required"`
-	Completed     bool     `json:"completed"`
-	AnyFieldOne   string   `json:"anyFieldOne"`
-	AnyFieldTwo   string   `json:"anyFieldTwo"`
-	Modules       []Module `json:"modules"`
-	Minigame      string   `json:"minigame"`
+	CreatedAt     string          `json:"createdAt"`
+	UpdatedAt     string          `json:"updatedAt"`
+	CurrentModule int             `json:"currentModule" validate:"required"`
+	Completed     bool            `json:"completed"`
+	AnyFieldOne   string          `json:"anyFieldOne"`
+	AnyFieldTwo   string          `json:"anyFieldTwo"`
+	Modules       json.RawMessage `json:"modules"`
+	Minigame      string          `json:"minigame"`
 }
 
 // User - структура пользователя.
@@ -33,21 +36,21 @@ type User struct {
 	Email    string `json:"email"`
 }
 
-type Module struct {
-	Name      string     `json:"name"`
-	Available bool       `json:"available"`
-	Questions []Question `json:"questions"`
-}
+// type Module struct {
+// 	Name      string     `json:"name"`
+// 	Available bool       `json:"available"`
+// 	Questions []Question `json:"questions"`
+// }
 
-type Question struct {
-	QuestionId    int      `json:"questionId"`
-	QuestionText  string   `json:"questionText"`
-	Answers       []Answer `json:"answers"`
-	Corrects      []int    `json:"corrects"`
-	PlayerAnswers []int    `json:"playerAnswers"`
-}
+// type Question struct {
+// 	QuestionId    int      `json:"questionId"`
+// 	QuestionText  string   `json:"questionText"`
+// 	Answers       []Answer `json:"answers"`
+// 	Corrects      []int    `json:"corrects"`
+// 	PlayerAnswers []int    `json:"playerAnswers"`
+// }
 
-type Answer struct {
-	AnswerNum  int    `json:"answerNum"`
-	AnswerText string `json:"answerText"`
-}
+// type Answer struct {
+// 	AnswerNum  int    `json:"answerNum"`
+// 	AnswerText string `json:"answerText"`
+// }

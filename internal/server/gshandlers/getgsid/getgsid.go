@@ -20,7 +20,7 @@ type SessionById interface {
 }
 
 // New - возвращает новый хэндлер для получения игровой сессии по id.
-func New(ctx context.Context, alog slog.Logger, st SessionById) http.HandlerFunc {
+func New(alog slog.Logger, st SessionById) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.getgsid.New"
 
@@ -40,6 +40,8 @@ func New(ctx context.Context, alog slog.Logger, st SessionById) http.HandlerFunc
 			render.PlainText(w, r, "Error, failed to receive a game session: incorrect id")
 			return
 		}
+
+		ctx := r.Context()
 
 		// Получаем игровую сессию из БД по ее id
 		gs, err := st.GetSessionById(ctx, id)

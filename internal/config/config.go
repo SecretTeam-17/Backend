@@ -14,7 +14,6 @@ type Config struct {
 	StoragePath   string `yaml:"storage_path" env-required:"true"`
 	StoragePasswd string `yaml:"storage_passwd" env-default:"DB_PASSWD"`
 	ModulesPath   string `yaml:"modules_path" env-required:"true"`
-	LogPath       string `yaml:"log_path" env-default:"LOG_FILE_PATH"`
 	HTTPServer    `yaml:"http_server"`
 }
 type HTTPServer struct {

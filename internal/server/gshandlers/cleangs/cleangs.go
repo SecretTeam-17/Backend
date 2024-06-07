@@ -20,7 +20,7 @@ type SessionCleaner interface {
 }
 
 // New - возвращает новый хэндлер для очистки игровой сессии по id.
-func New(ctx context.Context, alog slog.Logger, st SessionCleaner) http.HandlerFunc {
+func New(alog slog.Logger, st SessionCleaner) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.cleangs.New"
 
@@ -40,6 +40,8 @@ func New(ctx context.Context, alog slog.Logger, st SessionCleaner) http.HandlerF
 			render.PlainText(w, r, "Error, failed to clean a game session: incorrect id")
 			return
 		}
+
+		ctx := r.Context()
 
 		// Получаем очищенную игровую сессию из БД
 		gs, err := st.CleanSession(ctx, id)

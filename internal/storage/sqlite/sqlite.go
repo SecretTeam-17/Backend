@@ -1,12 +1,9 @@
 package sqlite
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -17,8 +14,7 @@ const timeout time.Duration = time.Second * 10
 
 // Storage - пул подключений к БД
 type Storage struct {
-	db      *sql.DB
-	modules string
+	db *sql.DB
 }
 
 // New - конструктор пула подключений к БД. Создает также пустые таблицы, если их нет.
@@ -42,14 +38,10 @@ func New(storagePath, questionPath string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 
-	mod, err := initModules(questionPath)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
-
-	return &Storage{db: db, modules: mod}, nil
+	return &Storage{db: db}, nil
 }
 
+// initTables - создает таблицы игроков и игровых сессий, если таких нет в БД.
 func initTables(ctx context.Context, db *sql.DB) error {
 	const operation = "storage.sqlite.initTables"
 
@@ -111,21 +103,23 @@ func (s *Storage) Close() error {
 	return s.db.Close()
 }
 
-func initModules(path string) (string, error) {
-	const operation = "storage.sqlite.initModules"
+// initModules - декодирует json файл с модулями в строку для записи в память сервера.
+// Не используется в текущей реализации.
+// func initModules(path string) (string, error) {
+// 	const operation = "storage.sqlite.initModules"
 
-	// Читаем из json файла в строку
-	file, err := os.ReadFile(path)
-	if err != nil {
-		return "", fmt.Errorf("%s: %w", operation, err)
-	}
+// 	// Читаем из json файла в строку
+// 	file, err := os.ReadFile(path)
+// 	if err != nil {
+// 		return "", fmt.Errorf("%s: %w", operation, err)
+// 	}
 
-	// Вырезаем лишние пробелы и отступы
-	buf := new(bytes.Buffer)
-	err = json.Compact(buf, file)
-	if err != nil {
-		return "", fmt.Errorf("%s: %w", operation, err)
-	}
+// 	// Вырезаем лишние пробелы и отступы
+// 	buf := new(bytes.Buffer)
+// 	err = json.Compact(buf, file)
+// 	if err != nil {
+// 		return "", fmt.Errorf("%s: %w", operation, err)
+// 	}
 
-	return buf.String(), nil
-}
+// 	return buf.String(), nil
+// }

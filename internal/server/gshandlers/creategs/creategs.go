@@ -30,7 +30,7 @@ type SessionCreator interface {
 }
 
 // New - возвращает новый хэндлер для создания игровой сессии.
-func New(ctx context.Context, alog slog.Logger, st SessionCreator) http.HandlerFunc {
+func New(alog slog.Logger, st SessionCreator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.creategs.New"
 
@@ -70,6 +70,8 @@ func New(ctx context.Context, alog slog.Logger, st SessionCreator) http.HandlerF
 			return
 		}
 		req.Email = strings.ToLower(req.Email)
+
+		ctx := r.Context()
 
 		// Создаем нового юзера и игровую сессию по данным из запроса
 		gs, err := st.CreateSession(ctx, req.Name, req.Email)
