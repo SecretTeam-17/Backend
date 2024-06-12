@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -23,9 +24,9 @@ type GameSession struct {
 	Email     string             `json:"email" bson:"email"`
 	CreatedAt time.Time          `json:"created_at" bson:"createdAt"`
 	UpdatedAt time.Time          `json:"updated_at" bson:"updatedAt"`
-	Stats     primitive.D        `json:"stats" bson:"stats"`
-	Modules   primitive.A        `json:"modules" bson:"modules"`
-	Minigames primitive.A        `json:"minigames" bson:"minigames"`
+	Stats     json.RawMessage    `json:"stats" bson:"stats"`
+	Modules   json.RawMessage    `json:"modules" bson:"modules"`
+	Minigames json.RawMessage    `json:"minigames" bson:"minigames"`
 }
 
 // // GameSession - структура игровой сессии.

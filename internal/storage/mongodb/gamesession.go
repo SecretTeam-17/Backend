@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"petsittersGameServer/internal/storage"
 	"time"
@@ -11,12 +12,38 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// Количество модулей игры зашито в константу пока не ясно, как получать это число динамически.
-// const modulesCount int = 4
+type gsBase struct {
+	Id        primitive.ObjectID `json:"id" bson:"_id"`
+	Username  string             `json:"username" bson:"username"`
+	Email     string             `json:"email" bson:"email"`
+	CreatedAt time.Time          `json:"created_at" bson:"createdAt"`
+	UpdatedAt time.Time          `json:"updated_at" bson:"updatedAt"`
+}
+
+type gsExtend struct {
+	Stats     json.RawMessage `json:"stats" bson:"stats"`
+	Modules   json.RawMessage `json:"modules" bson:"modules"`
+	Minigames json.RawMessage `json:"minigames" bson:"minigames"`
+}
 
 // CreateSession - создает в базе данных нового юзера и игровую сессию для него.
-func (s *Storage) CreateSession(ctx context.Context, name, email string) (*storage.GameSession, error) {
+func (s *Storage) CreateSession(ctx context.Context, name, email string, stats, modules, minigames []byte) (*storage.GameSession, error) {
 	const operation = "storage.mongodb.CreateSession"
+
+	// Преобразуем слайсы байт в JSON для корректной записи в БД.
+	var inputStats, inputMod, inputMini interface{}
+	err := bson.UnmarshalExtJSON(stats, true, &inputStats)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	err = bson.UnmarshalExtJSON(modules, true, &inputMod)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	err = bson.UnmarshalExtJSON(minigames, true, &inputMini)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
 
 	bsn := bson.D{
 		{Key: "_id", Value: primitive.NewObjectID()},
@@ -24,9 +51,9 @@ func (s *Storage) CreateSession(ctx context.Context, name, email string) (*stora
 		{Key: "email", Value: email},
 		{Key: "createdAt", Value: time.Now().UTC()},
 		{Key: "updatedAt", Value: time.Now().UTC()},
-		{Key: "stats", Value: bson.D{}},
-		{Key: "modules", Value: bson.A{}},
-		{Key: "minigames", Value: bson.A{}},
+		{Key: "stats", Value: inputStats},
+		{Key: "modules", Value: inputMod},
+		{Key: "minigames", Value: inputMini},
 	}
 
 	collection := s.db.Database(dbName).Collection(colName)
@@ -37,13 +64,47 @@ func (s *Storage) CreateSession(ctx context.Context, name, email string) (*stora
 
 	id := resId.InsertedID
 
-	var gs storage.GameSession
 	res := collection.FindOne(ctx, bson.D{{Key: "_id", Value: id}})
-	err = res.Decode(&gs)
+
+	// rba := bson.NewRegistry()
+	// rba.RegisterTypeMapEntry(bson.TypeEmbeddedDocument, reflect.TypeOf(bson.M{}))
+
+	var gsbase gsBase
+	err = res.Decode(&gsbase)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 
+	var bs bson.D
+	err = res.Decode(&bs)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	bytes, err := bson.MarshalExtJSON(bs, true, true)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	var gsext gsExtend
+	err = json.Unmarshal(bytes, &gsext)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+
+	fmt.Println("1 ", gsbase)
+	fmt.Println("2 ", bs)
+	fmt.Println("3 ", string(bytes))
+	// fmt.Println("4 ", gsext)
+
+	gs := storage.GameSession{
+		Id:        gsbase.Id,
+		Username:  gsbase.Username,
+		Email:     gsbase.Email,
+		CreatedAt: gsbase.CreatedAt,
+		UpdatedAt: gsbase.UpdatedAt,
+		Stats:     gsext.Stats,
+		Modules:   gsext.Modules,
+		Minigames: gsext.Minigames,
+	}
 	return &gs, nil
 }
 
