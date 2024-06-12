@@ -7,17 +7,15 @@ import (
 	"os"
 	"petsittersGameServer/internal/config"
 	"petsittersGameServer/internal/logger"
-	"petsittersGameServer/internal/server/gshandlers/cleangs"
 	"petsittersGameServer/internal/server/gshandlers/creategs"
 	"petsittersGameServer/internal/server/gshandlers/deletegs"
 	"petsittersGameServer/internal/server/gshandlers/getallgs"
 	"petsittersGameServer/internal/server/gshandlers/getgsemail"
 	"petsittersGameServer/internal/server/gshandlers/getgsid"
 	"petsittersGameServer/internal/server/gshandlers/truncate"
-	"petsittersGameServer/internal/server/gshandlers/updategs"
 	"petsittersGameServer/internal/server/index/indexpage"
 	"petsittersGameServer/internal/server/middleware/cors"
-	"petsittersGameServer/internal/storage/sqlite"
+	"petsittersGameServer/internal/storage/mongodb"
 	"petsittersGameServer/internal/tools/stopsignal"
 	"time"
 
@@ -35,7 +33,8 @@ func main() {
 	log.Debug("logger initialized")
 
 	// Инициализируем пул подключений к базе данных
-	storage, err := sqlite.New(cfg.StoragePath, cfg.ModulesPath)
+	//storage, err := sqlite.New(cfg.StoragePath, cfg.ModulesPath)
+	storage, err := mongodb.New(cfg.StoragePath)
 	if err != nil {
 		log.Error("failed to init storage", logger.Err(err))
 		os.Exit(1)
@@ -57,11 +56,11 @@ func main() {
 	router.Get("/api/session/id/{id}", getgsid.New(*log, storage))
 	router.Get("/api/session/email/{email}", getgsemail.New(*log, storage))
 	router.Get("/api/session/all", getallgs.New(*log, storage))
-	router.Get("/api/session/new/{id}", cleangs.New(*log, storage))
+	//router.Get("/api/session/new/{id}", cleangs.New(*log, storage))
 
 	router.Post("/api/session", creategs.New(*log, storage))
 
-	router.Put("/api/session", updategs.New(*log, storage))
+	//router.Put("/api/session", updategs.New(*log, storage))
 
 	router.Delete("/api/session/id/{id}", deletegs.New(*log, storage))
 	router.Delete("/api/session/verydangerousbutton", truncate.New(*log, storage)) // Для тестирования

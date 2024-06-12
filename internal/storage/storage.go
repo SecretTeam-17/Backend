@@ -1,8 +1,10 @@
 package storage
 
 import (
-	"encoding/json"
 	"errors"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Ошибки при работе с БД
@@ -10,31 +12,42 @@ var (
 	ErrUserExists      = errors.New("user exists")
 	ErrInput           = errors.New("incorrect user data input")
 	ErrSessionNotFound = errors.New("session not found")
-	ErrSessionsEmpty   = errors.New("table game_sessions is empty")
+	ErrSessionsEmpty   = errors.New("collection gamesessions is empty")
 	ErrUserNotFound    = errors.New("user not found")
 	ErrModuleNotFound  = errors.New("module not found")
 )
 
-// GameSession - структура игровой сессии.
 type GameSession struct {
-	SessionID int `json:"id" validate:"required"`
-	User
-	CreatedAt     string          `json:"createdAt"`
-	UpdatedAt     string          `json:"updatedAt"`
-	CurrentModule int             `json:"currentModule" validate:"required"`
-	Completed     bool            `json:"completed"`
-	AnyFieldOne   string          `json:"anyFieldOne"`
-	AnyFieldTwo   string          `json:"anyFieldTwo"`
-	Modules       json.RawMessage `json:"modules"`
-	Minigame      string          `json:"minigame"`
+	Id        primitive.ObjectID `json:"id" bson:"_id"`
+	Username  string             `json:"username" bson:"username"`
+	Email     string             `json:"email" bson:"email"`
+	CreatedAt time.Time          `json:"created_at" bson:"createdAt"`
+	UpdatedAt time.Time          `json:"updated_at" bson:"updatedAt"`
+	Stats     primitive.D        `json:"stats" bson:"stats"`
+	Modules   primitive.A        `json:"modules" bson:"modules"`
+	Minigames primitive.A        `json:"minigames" bson:"minigames"`
 }
 
-// User - структура пользователя.
-type User struct {
-	UserID   int    `json:"userId"`
-	UserName string `json:"username"`
-	Email    string `json:"email"`
-}
+// // GameSession - структура игровой сессии.
+// type GameSession struct {
+// 	SessionID int `json:"id" validate:"required"`
+// 	User
+// 	CreatedAt     string          `json:"createdAt"`
+// 	UpdatedAt     string          `json:"updatedAt"`
+// 	CurrentModule int             `json:"currentModule" validate:"required"`
+// 	Completed     bool            `json:"completed"`
+// 	AnyFieldOne   string          `json:"anyFieldOne"`
+// 	AnyFieldTwo   string          `json:"anyFieldTwo"`
+// 	Modules       json.RawMessage `json:"modules"`
+// 	Minigame      string          `json:"minigame"`
+// }
+
+// // User - структура пользователя.
+// type User struct {
+// 	UserID   int    `json:"userId"`
+// 	UserName string `json:"username"`
+// 	Email    string `json:"email"`
+// }
 
 // type Module struct {
 // 	Name      string     `json:"name"`

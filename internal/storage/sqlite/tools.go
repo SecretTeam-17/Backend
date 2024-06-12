@@ -19,7 +19,7 @@ func checkNullString(str string) sql.NullString {
 	}
 }
 
-// checkDBError - выявляет конкретный тип ошибки из БД.
+// checkDBError - выявляет конкретный тип ошибки из БД QLite.
 func checkDBError(err error) error {
 	sqliteErr, ok := err.(sqlite3.Error)
 	if ok && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {

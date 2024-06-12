@@ -2,17 +2,18 @@ package truncate
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"log/slog"
 	"net/http"
 	"petsittersGameServer/internal/logger"
+	"petsittersGameServer/internal/storage"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
 type DataTruncater interface {
-	TruncateTables(ctx context.Context) error
+	TruncateData(ctx context.Context) error
 }
 
 // New - возвращает новый хэндлер для удаления всех данных из таблиц игроков и игровых сессий.
@@ -30,9 +31,14 @@ func New(alog slog.Logger, st DataTruncater) http.HandlerFunc {
 		ctx := r.Context()
 
 		// Выполняем очистку таблиц
-		err := st.TruncateTables(ctx)
+		err := st.TruncateData(ctx)
+		if errors.Is(err, storage.ErrSessionsEmpty) {
+			log.Error("game sessions not found", logger.Err(err))
+			render.Status(r, 404)
+			render.PlainText(w, r, "Error, failed to delete a game session: no sessions found")
+			return
+		}
 		if err != nil {
-			fmt.Println(err)
 			log.Error("failed to truncate tables", logger.Err(err))
 			render.Status(r, 500)
 			render.PlainText(w, r, "Error, failed to truncate tables: unknown error")

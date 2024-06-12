@@ -2,6 +2,7 @@ package creategs
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -20,8 +21,11 @@ import (
 
 // Request - структура запроса для создания игровой сессии.
 type Request struct {
-	Name  string `json:"username" validate:"required,max=100"`
-	Email string `json:"email" validate:"required,email,max=100"`
+	Name      string          `json:"username" validate:"required,max=100"`
+	Email     string          `json:"email" validate:"required,email,max=100"`
+	Stats     json.RawMessage `json:"stats"`
+	Modules   json.RawMessage `json:"modules"`
+	Minigames json.RawMessage `json:"minigames"`
 }
 
 // Возможно, интерфейсы хранилища лучше перенести в пакет storage
@@ -56,7 +60,7 @@ func New(alog slog.Logger, st SessionCreator) http.HandlerFunc {
 			render.PlainText(w, r, "Error, failed to create new gameSession: failed to decode request")
 			return
 		}
-		log.Info("request body decoded", slog.Any("request", req))
+		log.Info("request body decoded")
 
 		// Валидация полей json из запроса
 		valid := validator.New()
@@ -94,7 +98,7 @@ func New(alog slog.Logger, st SessionCreator) http.HandlerFunc {
 			render.PlainText(w, r, "Error, failed to create new gameSession: unknown error")
 			return
 		}
-		log.Info("new gameSession created", slog.Int("id", gs.SessionID))
+		log.Info("new gameSession created", slog.String("id", gs.Id.Hex()))
 
 		// Записываем данные сессии в структуру Response
 		var resp rp.Response

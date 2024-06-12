@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"petsittersGameServer/internal/logger"
 	"petsittersGameServer/internal/storage"
+	"petsittersGameServer/internal/storage/sqlite"
 	"petsittersGameServer/internal/tools/api"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -17,7 +18,7 @@ import (
 )
 
 type SessionUpdater interface {
-	UpdateSession(ctx context.Context, gs storage.GameSession) error
+	UpdateSession(ctx context.Context, gs sqlite.GameSession) error
 }
 
 // New - возвращает новый хэндлер для обновления игровой сессии.
@@ -33,7 +34,7 @@ func New(alog slog.Logger, st SessionUpdater) http.HandlerFunc {
 		log.Info("new request to update a game session")
 
 		// Декодируем тело запроса в структуру GameSession и проверяем на ошибки
-		var req storage.GameSession
+		var req sqlite.GameSession
 		err := render.DecodeJSON(r.Body, &req)
 		if errors.Is(err, io.EOF) {
 			log.Error("request body is empty")

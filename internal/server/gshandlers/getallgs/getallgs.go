@@ -35,7 +35,7 @@ func New(alog slog.Logger, st AllSessions) http.HandlerFunc {
 		if errors.Is(err, storage.ErrSessionsEmpty) {
 			log.Error("game sessions not found")
 			render.Status(r, 404)
-			render.PlainText(w, r, "Error, failed to receive all game session: table is empty")
+			render.PlainText(w, r, "Error, failed to receive all game sessions: no sessions found")
 			return
 		}
 		if err != nil {

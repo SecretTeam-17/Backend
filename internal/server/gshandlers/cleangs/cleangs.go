@@ -8,6 +8,7 @@ import (
 	"petsittersGameServer/internal/logger"
 	rp "petsittersGameServer/internal/server/gshandlers/response"
 	"petsittersGameServer/internal/storage"
+	"petsittersGameServer/internal/storage/sqlite"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -16,7 +17,7 @@ import (
 )
 
 type SessionCleaner interface {
-	CleanSession(ctx context.Context, id int) (*storage.GameSession, error)
+	CleanSession(ctx context.Context, id int) (*sqlite.GameSession, error)
 }
 
 // New - возвращает новый хэндлер для очистки игровой сессии по id.
@@ -60,7 +61,7 @@ func New(alog slog.Logger, st SessionCleaner) http.HandlerFunc {
 		log.Info("game session was cleaned successfully", slog.Int("session_id", id))
 
 		// Записываем сессию в структуру Response
-		var resp rp.Response
+		var resp rp.ResponseSQL
 		resp.GameSession = *gs
 		render.Status(r, 200)
 		render.JSON(w, r, resp)

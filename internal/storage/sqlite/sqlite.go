@@ -3,6 +3,7 @@ package sqlite
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -11,6 +12,27 @@ import (
 
 // Таймаут на создание талблиц в БД
 const timeout time.Duration = time.Second * 10
+
+// GameSession - структура игровой сессии.
+type GameSession struct {
+	SessionID int `json:"id" validate:"required"`
+	User
+	CreatedAt     string          `json:"createdAt"`
+	UpdatedAt     string          `json:"updatedAt"`
+	CurrentModule int             `json:"currentModule" validate:"required"`
+	Completed     bool            `json:"completed"`
+	AnyFieldOne   string          `json:"anyFieldOne"`
+	AnyFieldTwo   string          `json:"anyFieldTwo"`
+	Modules       json.RawMessage `json:"modules"`
+	Minigame      string          `json:"minigame"`
+}
+
+// User - структура пользователя.
+type User struct {
+	UserID   int    `json:"userId"`
+	UserName string `json:"username"`
+	Email    string `json:"email"`
+}
 
 // Storage - пул подключений к БД
 type Storage struct {

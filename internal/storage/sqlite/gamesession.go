@@ -10,7 +10,7 @@ import (
 const modulesCount int = 4
 
 // CreateSession - создает в базе данных нового юзера и игровую сессию для него.
-func (s *Storage) CreateSession(ctx context.Context, name, email string) (*storage.GameSession, error) {
+func (s *Storage) CreateSession(ctx context.Context, name, email string) (*GameSession, error) {
 	const operation = "storage.sqlite.CreateSession"
 
 	// При POST запросе на создание нового игрока проверяем email. Если такой игрок уже сущетсвует,
@@ -20,7 +20,7 @@ func (s *Storage) CreateSession(ctx context.Context, name, email string) (*stora
 		return res, storage.ErrUserExists
 	}
 
-	var gs storage.GameSession
+	var gs GameSession
 	var mod string
 	// Начинаем транзакцию
 	tx, err := s.db.BeginTx(ctx, nil)
@@ -73,9 +73,9 @@ func (s *Storage) CreateSession(ctx context.Context, name, email string) (*stora
 }
 
 // GetSessionById - возвращает игровую сессию из БД по ее Id.
-func (s *Storage) GetSessionById(ctx context.Context, id int) (*storage.GameSession, error) {
+func (s *Storage) GetSessionById(ctx context.Context, id int) (*GameSession, error) {
 	const operation = "storage.sqlite.GetSessionById"
-	var gs storage.GameSession
+	var gs GameSession
 	var mod string
 
 	// Выполняем запрос и записываем результат в структуру GameSession
@@ -110,9 +110,9 @@ func (s *Storage) GetSessionById(ctx context.Context, id int) (*storage.GameSess
 }
 
 // GetSessionByEmail - возвращает игровую сессию из БД по емэйлу ее игрока.
-func (s *Storage) GetSessionByEmail(ctx context.Context, email string) (*storage.GameSession, error) {
+func (s *Storage) GetSessionByEmail(ctx context.Context, email string) (*GameSession, error) {
 	const operation = "storage.sqlite.GetSessionByEmail"
-	var gs storage.GameSession
+	var gs GameSession
 	var mod string
 
 	// Выполняем запрос и записываем результат в структуру GameSession
@@ -147,9 +147,9 @@ func (s *Storage) GetSessionByEmail(ctx context.Context, email string) (*storage
 }
 
 // GetSessions - возвращает все игровые сессии из БД.
-func (s *Storage) GetSessions(ctx context.Context) ([]storage.GameSession, error) {
+func (s *Storage) GetSessions(ctx context.Context) ([]GameSession, error) {
 	const operation = "storage.sqlite.GetSessions"
-	var arr []storage.GameSession
+	var arr []GameSession
 
 	// Выполняем запрос и записываем результат построчно в слайс
 	rows, err := s.db.QueryContext(ctx, `
@@ -165,7 +165,7 @@ func (s *Storage) GetSessions(ctx context.Context) ([]storage.GameSession, error
 		return nil, fmt.Errorf("%s: %w", operation, checkDBError(err))
 	}
 	for rows.Next() {
-		var gs storage.GameSession
+		var gs GameSession
 		var mod string
 		err := rows.Scan(
 			&gs.SessionID,
@@ -195,9 +195,9 @@ func (s *Storage) GetSessions(ctx context.Context) ([]storage.GameSession, error
 }
 
 // CleanSession - устанавливает изменяемые поля игровой сессии в значение по-умолчанию.
-func (s *Storage) CleanSession(ctx context.Context, id int) (*storage.GameSession, error) {
+func (s *Storage) CleanSession(ctx context.Context, id int) (*GameSession, error) {
 	const operation = "storage.sqlite.CleanSession"
-	var gs storage.GameSession
+	var gs GameSession
 	var mod string
 
 	// Начинаем транзакцию
@@ -264,7 +264,7 @@ func (s *Storage) CleanSession(ctx context.Context, id int) (*storage.GameSessio
 }
 
 // UpdateSession - устанавливает изменяемые поля игровой сессии в соответствии с переданными значениями.
-func (s *Storage) UpdateSession(ctx context.Context, gs storage.GameSession) error {
+func (s *Storage) UpdateSession(ctx context.Context, gs GameSession) error {
 	const operation = "storage.sqlite.UpdateSession"
 
 	// Начинаем транзакцию
@@ -361,8 +361,8 @@ func (s *Storage) DeleteSessionById(ctx context.Context, id int) error {
 }
 
 // TruncateTables - удаляет все записи из таблиц users и game_sessions.
-func (s *Storage) TruncateTables(ctx context.Context) error {
-	const operation = "storage.sqlite.TruncateTables"
+func (s *Storage) TruncateData(ctx context.Context) error {
+	const operation = "storage.sqlite.TruncateData"
 
 	// Начинаем транзакцию
 	tx, err := s.db.BeginTx(ctx, nil)

@@ -7,15 +7,15 @@ import (
 	"net/http"
 	"petsittersGameServer/internal/logger"
 	"petsittersGameServer/internal/storage"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type SessionDeleter interface {
-	DeleteSessionById(ctx context.Context, id int) error
+	DeleteSessionById(ctx context.Context, id primitive.ObjectID) error
 }
 
 // New - возвращает новый хэндлер для удаления игровой сессии по id.
@@ -32,7 +32,7 @@ func New(alog slog.Logger, st SessionDeleter) http.HandlerFunc {
 
 		// Получаем параметр из запроса и приводим его к типу int
 		param := chi.URLParam(r, "id")
-		id, err := strconv.Atoi(param)
+		id, err := primitive.ObjectIDFromHex(param)
 		if err != nil {
 			log.Error("invalid game session id", logger.Err(err))
 			render.Status(r, 400)
@@ -45,18 +45,18 @@ func New(alog slog.Logger, st SessionDeleter) http.HandlerFunc {
 		// Удаляем игровую сессию из БД
 		err = st.DeleteSessionById(ctx, id)
 		if errors.Is(err, storage.ErrSessionNotFound) {
-			log.Error("game session not found", slog.Int("session_id", id))
+			log.Error("game session not found", slog.String("id", id.Hex()))
 			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to delete a game session: id not found")
 			return
 		}
 		if err != nil {
-			log.Error("failed to delete a game session", slog.Int("session_id", id), logger.Err(err))
+			log.Error("failed to delete a game session", slog.String("id", id.Hex()), logger.Err(err))
 			render.Status(r, 404)
 			render.PlainText(w, r, "Error, failed to delete a game session: unknown error")
 			return
 		}
-		log.Info("game session was deleted successfully", slog.Int("session_id", id))
+		log.Info("game session was deleted successfully", slog.String("id", id.Hex()))
 
 		// Возвращаем статус 204 и пустое тело
 		render.Status(r, 204)
