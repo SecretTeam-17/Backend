@@ -1,5 +1,5 @@
 env: "prod" # окружение сервера. Варианты: local, dev, prod
-storage_path: "DB_PATH" # адрес для подключения к MongoDB
+storage_path: "mongodb://95.164.3.230:10515/" # адрес для подключения к MongoDB
 storage_passwd: "DB_PASSWD" # пока не используется
 http_server:
   address: "0.0.0.0:8083"

@@ -5,7 +5,7 @@ ENV CGO_ENABLED=1
 
 ENV CONFIG_PATH=./configs/dev.yaml
 
-ENV DB_PATH=mongodb://95.164.3.230:10515/
+# ENV DB_PATH=mongodb://95.164.3.230:10515/
 
 RUN apk add --no-cache \
     # Important: required for go-sqlite3
@@ -32,7 +32,7 @@ ENV CGO_ENABLED=1
 
 ENV CONFIG_PATH=/root/configs/dev.yaml
 
-ENV DB_PATH=mongodb://95.164.3.230:10515/
+# ENV DB_PATH=mongodb://95.164.3.230:10515/
 
 RUN apk add --no-cache \
     ca-certificates \
