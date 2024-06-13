@@ -7,12 +7,14 @@ import (
 	"os"
 	"petsittersGameServer/internal/config"
 	"petsittersGameServer/internal/logger"
+	"petsittersGameServer/internal/server/gshandlers/cleangs"
 	"petsittersGameServer/internal/server/gshandlers/creategs"
 	"petsittersGameServer/internal/server/gshandlers/deletegs"
 	"petsittersGameServer/internal/server/gshandlers/getallgs"
 	"petsittersGameServer/internal/server/gshandlers/getgsemail"
 	"petsittersGameServer/internal/server/gshandlers/getgsid"
 	"petsittersGameServer/internal/server/gshandlers/truncate"
+	"petsittersGameServer/internal/server/gshandlers/updategs"
 	"petsittersGameServer/internal/server/index/indexpage"
 	"petsittersGameServer/internal/server/middleware/cors"
 	"petsittersGameServer/internal/storage/mongodb"
@@ -56,11 +58,11 @@ func main() {
 	router.Get("/api/session/id/{id}", getgsid.New(*log, storage))
 	router.Get("/api/session/email/{email}", getgsemail.New(*log, storage))
 	router.Get("/api/session/all", getallgs.New(*log, storage))
-	//router.Get("/api/session/new/{id}", cleangs.New(*log, storage))
+	router.Get("/api/session/new/{id}", cleangs.New(*log, storage))
 
 	router.Post("/api/session", creategs.New(*log, storage))
 
-	//router.Put("/api/session", updategs.New(*log, storage))
+	router.Put("/api/session", updategs.New(*log, storage))
 
 	router.Delete("/api/session/id/{id}", deletegs.New(*log, storage))
 	router.Delete("/api/session/verydangerousbutton", truncate.New(*log, storage)) // Для тестирования

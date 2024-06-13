@@ -61,28 +61,28 @@ func New(alog slog.Logger, st SessionCreator) http.HandlerFunc {
 		}
 		log.Info("request body decoded")
 
-		// Преобразуем поля stats, modules и minigames в слайсы байт.
-		stats, err := req.Stats.MarshalJSON()
-		if err != nil {
-			log.Error("failed to marshal JSON stats", logger.Err(err))
-			render.Status(r, 400)
-			render.PlainText(w, r, "Error, failed to create new gameSession: failed to marshal JSON stats")
-			return
-		}
-		modules, err := req.Modules.MarshalJSON()
-		if err != nil {
-			log.Error("failed to marshal JSON modules", logger.Err(err))
-			render.Status(r, 400)
-			render.PlainText(w, r, "Error, failed to create new gameSession: failed to marshal JSON modules")
-			return
-		}
-		minigames, err := req.Minigames.MarshalJSON()
-		if err != nil {
-			log.Error("failed to marshal JSON minigames", logger.Err(err))
-			render.Status(r, 400)
-			render.PlainText(w, r, "Error, failed to create new gameSession: failed to marshal JSON minigames")
-			return
-		}
+		// // Преобразуем поля stats, modules и minigames в слайсы байт.
+		// stats, err := req.Stats.MarshalJSON()
+		// if err != nil {
+		// 	log.Error("failed to marshal JSON stats", logger.Err(err))
+		// 	render.Status(r, 400)
+		// 	render.PlainText(w, r, "Error, failed to create new gameSession: failed to marshal JSON stats")
+		// 	return
+		// }
+		// modules, err := req.Modules.MarshalJSON()
+		// if err != nil {
+		// 	log.Error("failed to marshal JSON modules", logger.Err(err))
+		// 	render.Status(r, 400)
+		// 	render.PlainText(w, r, "Error, failed to create new gameSession: failed to marshal JSON modules")
+		// 	return
+		// }
+		// minigames, err := req.Minigames.MarshalJSON()
+		// if err != nil {
+		// 	log.Error("failed to marshal JSON minigames", logger.Err(err))
+		// 	render.Status(r, 400)
+		// 	render.PlainText(w, r, "Error, failed to create new gameSession: failed to marshal JSON minigames")
+		// 	return
+		// }
 
 		// Валидация полей json из запроса.
 		valid := validator.New()
@@ -100,7 +100,7 @@ func New(alog slog.Logger, st SessionCreator) http.HandlerFunc {
 		ctx := r.Context()
 
 		// Создаем нового юзера и игровую сессию по данным из запроса.
-		gs, err := st.CreateSession(ctx, req.Name, req.Email, stats, modules, minigames)
+		gs, err := st.CreateSession(ctx, req.Name, req.Email, req.Stats, req.Modules, req.Minigames)
 		// Если игрок с данным email уже существует, то возвращаем его игровую сессию.
 		if errors.Is(err, storage.ErrUserExists) {
 			log.Info("user already exists; returning user data", slog.String("email", req.Email))
