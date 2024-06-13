@@ -32,7 +32,7 @@ func New(alog slog.Logger, st SessionUpdater) http.HandlerFunc {
 		)
 		log.Info("new request to update a game session")
 
-		// Декодируем тело запроса в структуру GameSession и проверяем на ошибки
+		// Декодируем тело запроса в структуру GameSession и проверяем на ошибки.
 		var req storage.GameSession
 		err := render.DecodeJSON(r.Body, &req)
 		if errors.Is(err, io.EOF) {
@@ -49,7 +49,7 @@ func New(alog slog.Logger, st SessionUpdater) http.HandlerFunc {
 		}
 		log.Info("request body decoded")
 
-		// Валидация полей json из запроса
+		// Валидация полей json из запроса.
 		valid := validator.New()
 		err = valid.Struct(req)
 		if err != nil {
@@ -63,7 +63,7 @@ func New(alog slog.Logger, st SessionUpdater) http.HandlerFunc {
 
 		ctx := r.Context()
 
-		// Обновляем игровую сессию в БД
+		// Обновляем игровую сессию в БД.
 		err = st.UpdateSession(ctx, req)
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.String("id", req.Id.Hex()))
@@ -79,7 +79,7 @@ func New(alog slog.Logger, st SessionUpdater) http.HandlerFunc {
 		}
 		log.Info("game session updated", slog.String("id", req.Id.Hex()))
 
-		// Возвращаем статус 204 и пустое тело
+		// Возвращаем статус 204 и пустое тело.
 		render.Status(r, 204)
 		render.NoContent(w, r)
 		log = nil

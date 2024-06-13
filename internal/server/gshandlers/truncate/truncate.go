@@ -30,7 +30,7 @@ func New(alog slog.Logger, st DataTruncater) http.HandlerFunc {
 
 		ctx := r.Context()
 
-		// Выполняем очистку таблиц
+		// Выполняем очистку таблиц.
 		err := st.TruncateData(ctx)
 		if errors.Is(err, storage.ErrSessionsEmpty) {
 			log.Error("game sessions not found", logger.Err(err))
@@ -41,12 +41,12 @@ func New(alog slog.Logger, st DataTruncater) http.HandlerFunc {
 		if err != nil {
 			log.Error("failed to truncate tables", logger.Err(err))
 			render.Status(r, 500)
-			render.PlainText(w, r, "Error, failed to truncate tables: unknown error")
+			render.PlainText(w, r, "Error, failed to truncate collection: unknown error")
 			return
 		}
-		log.Info("tables was truncated successfully")
+		log.Info("collection was truncated successfully")
 
-		// Возвращаем статус 204 и пустое тело
+		// Возвращаем статус 204 и пустое тело.
 		render.Status(r, 204)
 		render.NoContent(w, r)
 		log = nil

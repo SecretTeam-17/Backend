@@ -33,7 +33,7 @@ func New(alog slog.Logger, st SessionByEmail) http.HandlerFunc {
 		)
 		log.Info("new request to receive a game session by email")
 
-		// Получаем параметр из запроса и валидируем его к формату электронной почты
+		// Получаем параметр из запроса и валидируем его к формату электронной почты.
 		email := chi.URLParam(r, "email")
 		email, err := url.QueryUnescape(email)
 		if err != nil {
@@ -54,7 +54,7 @@ func New(alog slog.Logger, st SessionByEmail) http.HandlerFunc {
 
 		ctx := r.Context()
 
-		// Получаем игровую сессию из БД по email ее юзера
+		// Получаем игровую сессию из БД по email игрока.
 		gs, err := st.GetSessionByEmail(ctx, email)
 		if errors.Is(err, storage.ErrSessionNotFound) {
 			log.Error("game session not found", slog.String("user_email", email))
@@ -70,7 +70,7 @@ func New(alog slog.Logger, st SessionByEmail) http.HandlerFunc {
 		}
 		log.Info("game session was found successfully", slog.String("user_email", email))
 
-		// Записываем сессию в структуру Response
+		// Записываем сессию в структуру Response.
 		var resp rp.Response
 		resp.GameSession = *gs
 		render.Status(r, 200)

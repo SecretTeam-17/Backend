@@ -23,7 +23,9 @@ type Storage struct {
 func New(path string) (*Storage, error) {
 	const operation = "storage.mongodb.New"
 
+	// Задаем опции подключения.
 	opts := options.Client().ApplyURI(path)
+	// Создаем подключение к MongoDB и проверяем его.
 	db, err := mongo.Connect(context.Background(), opts)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
@@ -33,6 +35,7 @@ func New(path string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 
+	// Создаем уникальный индекс по полю email.
 	collection := db.Database(dbName).Collection(colName)
 	indexModel := mongo.IndexModel{
 		Keys:    bson.D{{Key: "email", Value: 1}},

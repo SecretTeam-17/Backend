@@ -30,7 +30,7 @@ func New(alog slog.Logger, st AllSessions) http.HandlerFunc {
 
 		ctx := r.Context()
 
-		// Получаем слайс всех игровых сессий из БД
+		// Получаем слайс всех игровых сессий из БД.
 		resp, err := st.GetSessions(ctx)
 		if errors.Is(err, storage.ErrSessionsEmpty) {
 			log.Error("game sessions not found")
@@ -46,7 +46,7 @@ func New(alog slog.Logger, st AllSessions) http.HandlerFunc {
 		}
 		log.Info("all game sessions was returned successfully")
 
-		// Записываем слайс игровых сессий из БД в респонс
+		// Записываем слайс игровых сессий из БД в респонс.
 		render.Status(r, 200)
 		render.JSON(w, r, resp)
 		log = nil
