@@ -103,7 +103,7 @@ func New(alog slog.Logger, st SessionCreator) http.HandlerFunc {
 		gs, err := st.CreateSession(ctx, req.Name, req.Email, req.Stats, req.Modules, req.Minigames)
 		// Если игрок с данным email уже существует, то возвращаем его игровую сессию.
 		if errors.Is(err, storage.ErrUserExists) {
-			log.Info("user already exists; returning user data", slog.String("email", req.Email))
+			log.Info("game session already exists; returning session data", slog.String("email", req.Email))
 			render.Status(r, 200)
 			render.JSON(w, r, gs)
 			return

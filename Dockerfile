@@ -5,6 +5,8 @@ ENV CGO_ENABLED=1
 
 ENV CONFIG_PATH=./configs/dev.yaml
 
+ENV DB_PATH=mongodb://95.164.3.230:10515/
+
 RUN apk add --no-cache \
     # Important: required for go-sqlite3
     gcc \
@@ -30,6 +32,8 @@ ENV CGO_ENABLED=1
 
 ENV CONFIG_PATH=/root/configs/dev.yaml
 
+ENV DB_PATH=mongodb://95.164.3.230:10515/
+
 RUN apk add --no-cache \
     ca-certificates \
     gcc \
@@ -49,6 +53,6 @@ COPY --from=builder /go/bin/server .
 
 ENTRYPOINT /root/server
 
-LABEL Name=petsittersgameserver Version=1.4.2
+LABEL Name=petsittersgameserver Version=1.9.0
 
 EXPOSE 8083

@@ -1,7 +1,6 @@
 env: "local" # окружение сервера. Варианты: local, dev, prod
-storage_path: "mongodb://95.164.3.230:10515/" # путь к файлу БД или адрес для подключения. SQLite создаст новый файл БД, если не найдет существующий
-storage_passwd: "DB_PASSWD" # не используется в SQLite
-modules_path: "./modules/modules.json" # путь к файлу с вопросами и ответами
+storage_path: "mongodb://95.164.3.230:10515/" # адрес для подключения к MongoDB
+storage_passwd: "DB_PASSWD" # пока не используется
 http_server:
   address: "localhost:8083"
   read_timeout: 5s

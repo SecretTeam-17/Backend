@@ -76,9 +76,16 @@ func buildGS(res *mongo.SingleResult) (*storage.GameSession, error) {
 func (s *Storage) CreateSession(ctx context.Context, name, email string, stats, modules, minigames []byte) (*storage.GameSession, error) {
 	const operation = "storage.mongodb.CreateSession"
 
+	// При POST запросе на создание нового игрока проверяем email. Если такой игрок уже сущетсвует,
+	// то возвращаем его игровую сессию.
+	gs, err := s.GetSessionByEmail(ctx, email)
+	if err == nil {
+		return gs, storage.ErrUserExists
+	}
+
 	// Преобразуем слайсы байт json.RawMessage для корректной записи в БД.
 	var inputStats, inputMod, inputMini interface{}
-	err := bson.UnmarshalExtJSON(stats, false, &inputStats)
+	err = bson.UnmarshalExtJSON(stats, false, &inputStats)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
@@ -114,7 +121,7 @@ func (s *Storage) CreateSession(ctx context.Context, name, email string, stats, 
 
 	// Получаем игровую сессию из БД.
 	res := collection.FindOne(ctx, bson.D{{Key: "_id", Value: id}})
-	gs, err := buildGS(res)
+	gs, err = buildGS(res)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, checkDBError(err))
 	}
