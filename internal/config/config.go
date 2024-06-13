@@ -13,7 +13,6 @@ type Config struct {
 	Env           string `yaml:"env" env-default:"prod"`
 	StoragePath   string `yaml:"storage_path" env-required:"true"`
 	StoragePasswd string `yaml:"storage_passwd" env-default:"DB_PASSWD"`
-	ModulesPath   string `yaml:"modules_path" env-required:"true"`
 	HTTPServer    `yaml:"http_server"`
 }
 type HTTPServer struct {
