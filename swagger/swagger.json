@@ -3,11 +3,11 @@
   "info": {
     "title": "Petsitters game server - OpenAPI 3.0",
     "description": "REST API для взаимодействия с базой данных игрового веб сервера по объекту \"игровая сессия\".\n\nВсе ошибки возвращаются в text/plain в теле ответа.\n\nИзменяемые поля в json игровой сессии: \n* username (string) - только при POST запросе\n* email (string) - только при POST запросе \n* stats (json)\n* modules (json)\n* minigames (json). \n\nЭти поля могут меняться во фронтенде и быть записаны в БД через данное API. Остальные управляются сервером и базой данных, и будут проигнорированы при отправке. В поле modules можно положить любые валидные для json значения.",
-    "version": "1.9.0"
+    "version": "1.10.0"
   },
   "servers": [
     {
-      "url": "http://95.164.3.230",
+      "url": "https://sf-hackathon.xyz",
       "description": "dev server"
     }
   ],
