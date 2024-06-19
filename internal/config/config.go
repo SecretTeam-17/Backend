@@ -12,7 +12,8 @@ import (
 type Config struct {
 	Env           string `yaml:"env" env-default:"prod"`
 	StoragePath   string `yaml:"storage_path" env-required:"true"`
-	StoragePasswd string `yaml:"storage_passwd" env-default:"DB_PASSWD"`
+	StorageUser   string `yaml:"storage_user" env:"DB_USER" env-required:"true"`
+	StoragePasswd string `yaml:"storage_passwd" env:"DB_PASSWD" env-required:"true"`
 	CertPath      string `yaml:"cert_path" env:"CERT_PATH" env-required:"true"`
 	CertKeyPath   string `yaml:"cert_key_path" env:"CERT_KEY_PATH" env-required:"true"`
 	HTTPServer    `yaml:"http_server"`

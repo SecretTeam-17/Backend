@@ -20,11 +20,18 @@ type Storage struct {
 }
 
 // New - конструктор пула подключений к БД.
-func New(path string) (*Storage, error) {
+func New(path, user, password string) (*Storage, error) {
 	const operation = "storage.mongodb.New"
 
+	credential := options.Credential{
+		AuthMechanism: "SCRAM-SHA-256",
+		AuthSource:    "admin",
+		Username:      user,
+		Password:      password,
+	}
+
 	// Задаем опции подключения.
-	opts := options.Client().ApplyURI(path)
+	opts := options.Client().ApplyURI(path).SetAuth(credential)
 	// Создаем подключение к MongoDB и проверяем его.
 	db, err := mongo.Connect(context.Background(), opts)
 	if err != nil {

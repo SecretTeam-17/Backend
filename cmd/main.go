@@ -37,7 +37,7 @@ func main() {
 
 	// Инициализируем пул подключений к базе данных
 	//storage, err := sqlite.New(cfg.StoragePath, cfg.ModulesPath)
-	storage, err := mongodb.New(cfg.StoragePath)
+	storage, err := mongodb.New(cfg.StoragePath, cfg.StorageUser, cfg.StoragePasswd)
 	if err != nil {
 		log.Error("failed to init storage", logger.Err(err))
 		os.Exit(1)
