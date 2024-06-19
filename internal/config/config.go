@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -48,9 +47,6 @@ func MustLoad() *Config {
 	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
 		log.Fatalf("cannot read config: %s", err)
 	}
-
-	fmt.Println(cfg.CertPath)
-	fmt.Println(cfg.CertKeyPath)
 
 	return &cfg
 }

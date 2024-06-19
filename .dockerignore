@@ -5,4 +5,5 @@
 **/.vscode
 **/Dockerfile*
 gameSession_JSON_Example.json
+modulesExample.json
 README.md

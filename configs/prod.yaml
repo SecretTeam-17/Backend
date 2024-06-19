@@ -1,8 +1,8 @@
 env: "prod" # окружение сервера. Варианты: local, dev, prod
 storage_path: "mongodb://95.164.3.230:10515/" # адрес для подключения к MongoDB
 storage_passwd: "DB_PASSWD" # пока не используется
-cert_path: "./cert/fullchain.pem" # путь к файлу ssl сертификата
-cert_key_path: "./cert/privkey.pem" # путь к файлу ключа ssl сертификата
+cert_path: "/etc/letsencrypt/live/sf-hackathon.xyz/fullchain.pem" # путь к файлу ssl сертификата
+cert_key_path: "/etc/letsencrypt/live/sf-hackathon.xyz/privkey.pem" # путь к файлу ключа ssl сертификата
 http_server:
   address: "0.0.0.0:80"
   addressTLS: "0.0.0.0:443"

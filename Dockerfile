@@ -10,11 +10,7 @@ RUN apk add --no-cache \
 
 WORKDIR /go/src/sitterserver
 
-RUN mkdir -p /go/src/sitterserver/cert
-
 COPY . .
-
-COPY /etc/letsencrypt/live/sf-hackathon.xyz/fullchain.pem /etc/letsencrypt/live/sf-hackathon.xyz/privkey.pem ./cert/
 
 RUN go mod download
 
@@ -39,20 +35,16 @@ STOPSIGNAL SIGTERM
 
 WORKDIR /root
 
-RUN mkdir -p /root/storage /root/configs /root/internal/templates /root/cert
+RUN mkdir -p /root/storage /root/configs /root/internal/templates
 
 COPY --from=builder /go/src/sitterserver/configs ./configs
 
 COPY --from=builder /go/src/sitterserver/internal/templates ./internal/templates
 
-COPY --from=builder /go/src/sitterserver/cert ./cert
-
 COPY --from=builder /go/bin/server .
 
 ENTRYPOINT /root/server
 
-LABEL Name=PetsittersAPIgameserver Version=1.10.0
+LABEL Name=PetsittersAPIgameserver Version=1.10.1
 
-EXPOSE 80
-
-EXPOSE 443
+EXPOSE 80 443
