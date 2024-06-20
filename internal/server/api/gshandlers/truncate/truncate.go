@@ -1,7 +1,6 @@
 package truncate
 
 import (
-	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -12,12 +11,12 @@ import (
 	"github.com/go-chi/render"
 )
 
-type DataTruncater interface {
-	TruncateData(ctx context.Context) error
-}
+// type DataTruncater interface {
+// 	TruncateData(ctx context.Context) error
+// }
 
 // New - возвращает новый хэндлер для удаления всех данных из таблиц игроков и игровых сессий.
-func New(alog slog.Logger, st DataTruncater) http.HandlerFunc {
+func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.truncate.New"
 

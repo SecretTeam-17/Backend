@@ -1,7 +1,6 @@
 package getallgs
 
 import (
-	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -12,12 +11,12 @@ import (
 	"github.com/go-chi/render"
 )
 
-type AllSessions interface {
-	GetSessions(ctx context.Context) ([]storage.GameSession, error)
-}
+// type AllSessions interface {
+// 	GetSessions(ctx context.Context) ([]storage.GameSession, error)
+// }
 
 // New - возвращает новый хэндлер для получения всех игровых сессий.
-func New(alog slog.Logger, st AllSessions) http.HandlerFunc {
+func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.getallgs.New"
 

@@ -1,7 +1,6 @@
 package creategs
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,7 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"petsittersGameServer/internal/logger"
-	rp "petsittersGameServer/internal/server/gshandlers/response"
+	rp "petsittersGameServer/internal/server/api/gshandlers/response"
 	"petsittersGameServer/internal/storage"
 	"petsittersGameServer/internal/tools/api"
 	"strings"
@@ -28,12 +27,12 @@ type Request struct {
 	Minigames json.RawMessage `json:"minigames"`
 }
 
-type SessionCreator interface {
-	CreateSession(ctx context.Context, name, email string, stats, modules, minigames []byte) (*storage.GameSession, error)
-}
+// type SessionCreator interface {
+// 	CreateSession(ctx context.Context, name, email string, stats, modules, minigames []byte) (*storage.GameSession, error)
+// }
 
 // New - возвращает новый хэндлер для создания игровой сессии.
-func New(alog slog.Logger, st SessionCreator) http.HandlerFunc {
+func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.creategs.New"
 

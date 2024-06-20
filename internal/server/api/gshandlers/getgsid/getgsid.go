@@ -1,12 +1,11 @@
 package getgsid
 
 import (
-	"context"
 	"errors"
 	"log/slog"
 	"net/http"
 	"petsittersGameServer/internal/logger"
-	rp "petsittersGameServer/internal/server/gshandlers/response"
+	rp "petsittersGameServer/internal/server/api/gshandlers/response"
 	"petsittersGameServer/internal/storage"
 
 	"github.com/go-chi/chi/v5"
@@ -14,12 +13,12 @@ import (
 	"github.com/go-chi/render"
 )
 
-type SessionById interface {
-	GetSessionById(ctx context.Context, id string) (*storage.GameSession, error)
-}
+// type SessionById interface {
+// 	GetSessionById(ctx context.Context, id string) (*storage.GameSession, error)
+// }
 
 // New - возвращает новый хэндлер для получения игровой сессии по id.
-func New(alog slog.Logger, st SessionById) http.HandlerFunc {
+func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.getgsid.New"
 

@@ -1,7 +1,6 @@
 package updategs
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -16,12 +15,12 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type SessionUpdater interface {
-	UpdateSession(ctx context.Context, gs storage.GameSession) error
-}
+// type SessionUpdater interface {
+// 	UpdateSession(ctx context.Context, gs storage.GameSession) error
+// }
 
 // New - возвращает новый хэндлер для обновления игровой сессии.
-func New(alog slog.Logger, st SessionUpdater) http.HandlerFunc {
+func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.updategs.New"
 

@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"time"
@@ -29,42 +30,13 @@ type GameSession struct {
 	Minigames json.RawMessage    `json:"minigames" bson:"minigames"`
 }
 
-// // GameSession - структура игровой сессии.
-// type GameSession struct {
-// 	SessionID int `json:"id" validate:"required"`
-// 	User
-// 	CreatedAt     string          `json:"createdAt"`
-// 	UpdatedAt     string          `json:"updatedAt"`
-// 	CurrentModule int             `json:"currentModule" validate:"required"`
-// 	Completed     bool            `json:"completed"`
-// 	AnyFieldOne   string          `json:"anyFieldOne"`
-// 	AnyFieldTwo   string          `json:"anyFieldTwo"`
-// 	Modules       json.RawMessage `json:"modules"`
-// 	Minigame      string          `json:"minigame"`
-// }
-
-// // User - структура пользователя.
-// type User struct {
-// 	UserID   int    `json:"userId"`
-// 	UserName string `json:"username"`
-// 	Email    string `json:"email"`
-// }
-
-// type Module struct {
-// 	Name      string     `json:"name"`
-// 	Available bool       `json:"available"`
-// 	Questions []Question `json:"questions"`
-// }
-
-// type Question struct {
-// 	QuestionId    int      `json:"questionId"`
-// 	QuestionText  string   `json:"questionText"`
-// 	Answers       []Answer `json:"answers"`
-// 	Corrects      []int    `json:"corrects"`
-// 	PlayerAnswers []int    `json:"playerAnswers"`
-// }
-
-// type Answer struct {
-// 	AnswerNum  int    `json:"answerNum"`
-// 	AnswerText string `json:"answerText"`
-// }
+type Interface interface {
+	CleanSession(ctx context.Context, id string) (*GameSession, error)
+	CreateSession(ctx context.Context, name, email string, stats, modules, minigames []byte) (*GameSession, error)
+	DeleteSessionById(ctx context.Context, id string) error
+	GetSessions(ctx context.Context) ([]GameSession, error)
+	GetSessionByEmail(ctx context.Context, email string) (*GameSession, error)
+	GetSessionById(ctx context.Context, id string) (*GameSession, error)
+	TruncateData(ctx context.Context) error
+	UpdateSession(ctx context.Context, gs GameSession) error
+}

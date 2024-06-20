@@ -1,13 +1,12 @@
 package getgsemail
 
 import (
-	"context"
 	"errors"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"petsittersGameServer/internal/logger"
-	rp "petsittersGameServer/internal/server/gshandlers/response"
+	rp "petsittersGameServer/internal/server/api/gshandlers/response"
 	"petsittersGameServer/internal/storage"
 	"strings"
 
@@ -17,12 +16,12 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type SessionByEmail interface {
-	GetSessionByEmail(ctx context.Context, email string) (*storage.GameSession, error)
-}
+// type SessionByEmail interface {
+// 	GetSessionByEmail(ctx context.Context, email string) (*storage.GameSession, error)
+// }
 
 // New - возвращает новый хэндлер для получения игровой сессии по email.
-func New(alog slog.Logger, st SessionByEmail) http.HandlerFunc {
+func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const operation = "handlers.getgsemail.New"
 
