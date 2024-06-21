@@ -33,6 +33,7 @@ func main() {
 	server.Middleware(router)
 	server.Game(router, log)
 	server.API(router, log, storage)
+	server.Swagger(router, log)
 
 	// Создаем новый сервер и запускаем в отдельной горутине.
 	srv := server.New(cfg, router)

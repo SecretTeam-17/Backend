@@ -1,0 +1,410 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Petsitters game server - OpenAPI 3.0",
+    "description": "REST API для взаимодействия с базой данных игрового веб сервера по объекту \"игровая сессия\".\n\nВсе ошибки возвращаются в text/plain в теле ответа.\n\nИзменяемые поля в json игровой сессии: \n* username (string) - только при POST запросе\n* email (string) - только при POST запросе \n* stats (json)\n* modules (json)\n* minigames (json). \n\nЭти поля могут меняться во фронтенде и быть записаны в БД через данное API. Остальные управляются сервером и базой данных, и будут проигнорированы при отправке. В поле modules можно положить любые валидные для json значения.",
+    "version": "1.10.1"
+  },
+  "servers": [
+    {
+      "url": "https://sf-hackathon.xyz",
+      "description": "dev server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "gameSession",
+      "description": "Объект хранит данные игрока и игровой сессии"
+    }
+  ],
+  "paths": {
+    "/api/session/id/{id}": {
+      "get": {
+        "tags": [
+          "gameSession"
+        ],
+        "summary": "Получение игровой сессии по ее id",
+        "description": "Возвращает json игровой сессии по id, указанному в параметре, либо ошибку. Стоит обращать внимание на ошибки с припиской в конце \\\"unknown error\\\". Значит эта ошибка не распознана, и на нее следует указать.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id игровой сессии",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ObjectId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Игровая сессия найдена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gameSession"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный id сессии"
+          },
+          "404": {
+            "description": "Игровая сессия с указанным id не найдена"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "gameSession"
+        ],
+        "summary": "Удаление игровой сессии по ее id",
+        "description": "Удаляет игровую сессию по id, указанному в параметре. Возвращает 204 и пустое тело, либо ошибку. Стоит обращать внимание на ошибки с припиской в конце \\\"unknown error\\\". Значит эта ошибка не распознана, и на нее следует указать.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id игровой сессии",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ObjectId"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Игровая сессия удалена"
+          },
+          "400": {
+            "description": "Некорректный id сессии"
+          },
+          "404": {
+            "description": "Игровая сессия с указанным id не найдена"
+          }
+        }
+      }
+    },
+    "/api/session": {
+      "post": {
+        "tags": [
+          "gameSession"
+        ],
+        "summary": "Создание нового игрока и игровой сессии",
+        "description": "Создает нового игрока и игровую сессию. Возвращает json с переданными значениями, либо ошибку. Если игровая сессия с переданными данными уже есть в БД, то вернет ее. Стоит обращать внимание на ошибки с припиской в конце \\\"unknown error\\\". Значит эта ошибка не распознана, и на нее следует указать.",
+        "requestBody": {
+          "description": "Принимает json с обязательными полями. Максимальная длина поля - 100 символов",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/newUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Игрок и игровая сессия по переданным данным успешно найдены",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gameSession"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Новый игрок и игровая сессия успешно созданы",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gameSession"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Пустое тело или невалидный json в запросе"
+          },
+          "422": {
+            "description": "Ошибка валидации; Прочие ошибки"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "gameSession"
+        ],
+        "summary": "Обновление данных игровой сессии",
+        "description": "Обновляет все изменяемые поля игровой сессии и возвращает 204. Обязательное поле id. Любое изменяемое поле, имеющее пустое значение или отсутствующее вообще будет приведено к значению по-умолчанию (null). Стоит обращать внимание на ошибки с припиской в конце \\\"unknown error\\\". Значит эта ошибка не распознана, и на нее следует указать.",
+        "requestBody": {
+          "description": "Принимает json с обязательными полями id и currentModule",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/gameSession"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Данные игровой сессии успешно обновлены"
+          },
+          "400": {
+            "description": "Пустое тело или невалидный json в запросе"
+          },
+          "404": {
+            "description": "Не найдена игровая сессия с переданным id"
+          },
+          "422": {
+            "description": "Ошибка валидации; Прочие ошибки"
+          }
+        }
+      }
+    },
+    "/api/session/email/{email}": {
+      "get": {
+        "tags": [
+          "gameSession"
+        ],
+        "summary": "Получение игровой сессии по email ее игрока",
+        "description": "Возвращает json игровой сессии по email игрока, указанному в параметре, либо ошибку. Стоит обращать внимание на ошибки с припиской в конце \\\"unknown error\\\". Значит эта ошибка не распознана, и на нее следует указать.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "email игрока, которому принадлежит игровая сессия",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Игровая сессия найдена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gameSession"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Игровая сессия по указанному email игрока не найдена"
+          },
+          "422": {
+            "description": "Некорректный email"
+          }
+        }
+      }
+    },
+    "/api/session/all": {
+      "get": {
+        "tags": [
+          "gameSession"
+        ],
+        "summary": "Получение всех игровых сессий",
+        "description": "Возвращает массив json всех игровых сессий, которые есть в БД. Либо ошибку, если БД пуста. Стоит обращать внимание на ошибки с припиской в конце \\\"unknown error\\\". Значит эта ошибка не распознана, и на нее следует указать.",
+        "responses": {
+          "200": {
+            "description": "Игровые сессии найдены",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/gameSession"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Таблица игровых сессий пуста"
+          }
+        }
+      }
+    },
+    "/api/session/new/{id}": {
+      "get": {
+        "tags": [
+          "gameSession"
+        ],
+        "summary": "Очистка игровой сессии по ее id",
+        "description": "Очищает игровую сессию, устанавливая изменяемые поля в значения по-умолчанию (null). Возвращает json с данными игровой сессии, либо ошибку. Стоит обращать внимание на ошибки с припиской в конце \\\"unknown error\\\". Значит эта ошибка не распознана, и на нее следует указать.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id игровой сессии",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ObjectId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Игровая сессия очищена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gameSession"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный id сессии"
+          },
+          "404": {
+            "description": "Игровая сессия с указанным id не найдена"
+          }
+        }
+      }
+    },
+    "/api/session/verydangerousbutton": {
+      "delete": {
+        "tags": [
+          "gameSession"
+        ],
+        "summary": "Удаление всех данных из таблиц игроков и игровых сессий",
+        "description": "Удаляет все данные по игрокам и игровым сессиям. Возвращает 204 и пустое тело, либо ошибку.",
+        "responses": {
+          "204": {
+            "description": "Данные всех игровых сессий удалены"
+          },
+          "500": {
+            "description": "Ошибка базы данных"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "gameSession": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Уникальный id игровой сессии",
+            "format": "ObjectId",
+            "example": "666abebbf7e047c2c2cc02bc"
+          },
+          "username": {
+            "type": "string",
+            "description": "Имя, которое ввел игрок при старте игры",
+            "maxLength": 100,
+            "example": "bob"
+          },
+          "email": {
+            "type": "string",
+            "description": "Емэйл, который ввел игрок при старте игры. Должен быть уникальным для каждого игрока",
+            "format": "email",
+            "maxLength": 100,
+            "example": "bob@gmail.com"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Дата и время создания игровой сессии",
+            "format": "date-time",
+            "example": "2024-06-01T17:04:13.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Дата и время изменения игровой сессии",
+            "example": "2024-06-01T17:04:13.000Z"
+          },
+          "stats": {
+            "type": "object",
+            "description": "Техническое поле"
+          },
+          "modules": {
+            "type": "object",
+            "description": "Техническое поле"
+          },
+          "minigames": {
+            "type": "object",
+            "description": "Техническое поле"
+          }
+        }
+      },
+      "newUser": {
+        "required": [
+          "username",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Вводимое игроком имя",
+            "maxLength": 100,
+            "example": "bob"
+          },
+          "email": {
+            "type": "string",
+            "description": "Вводимый игроком емэйл",
+            "format": "email",
+            "maxLength": 100,
+            "example": "bob@gmail.com"
+          },
+          "stats": {
+            "type": "object",
+            "description": "Техническое поле"
+          },
+          "modules": {
+            "type": "object",
+            "description": "Техническое поле"
+          },
+          "minigames": {
+            "type": "object",
+            "description": "Техническое поле"
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "newUser": {
+        "description": "Необходимые данные об игроке для создания новой игровой сессии",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/newUser"
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "sessionsArray": {
+        "description": "Список всех игровых сессий",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/gameSession"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
