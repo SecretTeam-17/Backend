@@ -39,12 +39,10 @@ RUN mkdir -p /root/storage /root/configs /root/internal/templates
 
 COPY --from=builder /go/src/sitterserver/configs ./configs
 
-COPY --from=builder /go/src/sitterserver/internal/templates ./internal/templates
-
 COPY --from=builder /go/bin/server .
 
 ENTRYPOINT /root/server
 
-LABEL Name=PetsittersAPIgameserver Version=1.10.1
+LABEL Name=PetsittersAPIgameserver Version=1.11.0
 
 EXPOSE 80 443
