@@ -14,7 +14,9 @@ info:
     * minigames (json). 
     
     Эти поля могут меняться во фронтенде и быть записаны в БД через данное API. Остальные управляются сервером и базой данных, и будут проигнорированы при отправке. В поле modules можно положить любые валидные для json значения.
-  version: 1.10.1
+    
+    Методы получения всех игровых сессий, удаления игровой сессии и очистки БД защищены базовой аутентификацией и требуют ввода логина и пароля.
+  version: 1.11.0
 servers:
   - url: https://sf-hackathon.xyz
     description: dev server
@@ -53,6 +55,8 @@ paths:
         - gameSession
       summary: Удаление игровой сессии по ее id
       description: Удаляет игровую сессию по id, указанному в параметре. Возвращает 204 и пустое тело, либо ошибку. Стоит обращать внимание на ошибки с припиской в конце \"unknown error\". Значит эта ошибка не распознана, и на нее следует указать.
+      security:
+        - basicAuth: []
       parameters:
         - name: id
           in: path
@@ -64,6 +68,8 @@ paths:
       responses:
         '204':
           description: Игровая сессия удалена
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '400':
           description: Некорректный id сессии
         '404':
@@ -156,6 +162,8 @@ paths:
         - gameSession
       summary: Получение всех игровых сессий
       description: Возвращает массив json всех игровых сессий, которые есть в БД. Либо ошибку, если БД пуста. Стоит обращать внимание на ошибки с припиской в конце \"unknown error\". Значит эта ошибка не распознана, и на нее следует указать.
+      security:
+        - basicAuth: []
       responses:
         '200':
           description: Игровые сессии найдены
@@ -165,7 +173,9 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: '#/components/schemas/gameSession'          
+                  $ref: '#/components/schemas/gameSession'  
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Таблица игровых сессий пуста
   
@@ -201,9 +211,13 @@ paths:
         - gameSession
       summary: Удаление всех данных из таблиц игроков и игровых сессий
       description: Удаляет все данные по игрокам и игровым сессиям. Возвращает 204 и пустое тело, либо ошибку.
+      security:
+        - basicAuth: []
       responses:
         '204':
           description: Данные всех игровых сессий удалены
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '500':
           description: Ошибка базы данных
   
@@ -294,5 +308,15 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/gameSession'
-  
+    UnauthorizedError:
+      description: Неверная или отсутствующая авторизация
+      headers:
+        www_Authenticate:
+          schema:
+            type: string
+              
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
             

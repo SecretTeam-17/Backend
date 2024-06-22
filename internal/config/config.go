@@ -48,6 +48,5 @@ func MustLoad() *Config {
 		log.Fatalf("cannot read config: %s", err)
 	}
 
-	cfg.AuthPasswd = "sitter1234"
 	return &cfg
 }
