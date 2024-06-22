@@ -29,11 +29,15 @@ func main() {
 	// Получаем главный роутер.
 	router := chi.NewRouter()
 
-	// Указываем обработчики.
 	server.Middleware(router)
-	server.Game(router, log)
+
 	server.API(router, log, storage)
+	server.SensitiveAPI(cfg, router, log, storage)
+
 	server.Swagger(router, log)
+	server.Game(router, log)
+
+	// Указываем обработчики.
 
 	// Создаем новый сервер и запускаем в отдельной горутине.
 	srv := server.New(cfg, router)

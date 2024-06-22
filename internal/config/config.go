@@ -16,6 +16,8 @@ type Config struct {
 	StoragePasswd string `yaml:"storage_passwd" env:"DB_PASSWD" env-required:"true"`
 	CertPath      string `yaml:"cert_path" env:"CERT_PATH" env-required:"true"`
 	CertKeyPath   string `yaml:"cert_key_path" env:"CERT_KEY_PATH" env-required:"true"`
+	AuthUser      string `yaml:"auth_user" env:"AUTH_USER" env-required:"true"`
+	AuthPasswd    string `yaml:"auth_passwd" env:"AUTH_PASSWD" env-required:"true"`
 	HTTPServer    `yaml:"http_server"`
 }
 type HTTPServer struct {
@@ -46,5 +48,6 @@ func MustLoad() *Config {
 		log.Fatalf("cannot read config: %s", err)
 	}
 
+	cfg.AuthPasswd = "sitter1234"
 	return &cfg
 }

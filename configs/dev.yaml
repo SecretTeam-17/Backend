@@ -4,6 +4,8 @@ storage_user: "DB_USER" # пользователь для аутентифика
 storage_passwd: "DB_PASSWD" # пароль для аутентификации в MongoDB
 cert_path: "/etc/letsencrypt/live/sf-hackathon.xyz/fullchain.pem" # путь к файлу ssl сертификата
 cert_key_path: "/etc/letsencrypt/live/sf-hackathon.xyz/privkey.pem" # путь к файлу ключа ssl сертификата
+auth_user: "admin"
+auth_passwd: "AUTH_PASSWD"
 http_server:
   address: "0.0.0.0:80"
   addressTLS: "0.0.0.0:443"

@@ -18,7 +18,7 @@ func New(alog slog.Logger) http.HandlerFunc {
 			slog.String("op", operation),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
-		log.Info("new request to receive swagger page")
+		log.Info("new request to receive the game")
 		log = nil
 
 		http.FileServer(game.Serve()).ServeHTTP(w, r)
