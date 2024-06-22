@@ -12,14 +12,10 @@ import (
 	"github.com/go-chi/render"
 )
 
-// type SessionDeleter interface {
-// 	DeleteSessionById(ctx context.Context, id string) error
-// }
-
 // New - возвращает новый хэндлер для удаления игровой сессии по id.
 func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const operation = "handlers.deletegs.New"
+		const operation = "gshandlers.deletegs.New"
 
 		log := &alog
 		log = log.With(

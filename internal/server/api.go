@@ -19,13 +19,13 @@ import (
 
 // API - инициализирует все общедоступные обработчики API.
 func API(router chi.Router, log *slog.Logger, storage storage.Interface) {
-	router.Get("/api/session/id/{id}", getgsid.New(*log, storage))
-	router.Get("/api/session/email/{email}", getgsemail.New(*log, storage))
-	router.Get("/api/session/new/{id}", cleangs.New(*log, storage))
+	router.Get("/session/id/{id}", getgsid.New(*log, storage))
+	router.Get("/session/email/{email}", getgsemail.New(*log, storage))
+	router.Get("/session/new/{id}", cleangs.New(*log, storage))
 
-	router.Post("/api/session", creategs.New(*log, storage))
+	router.Post("/session", creategs.New(*log, storage))
 
-	router.Put("/api/session", updategs.New(*log, storage))
+	router.Put("/session", updategs.New(*log, storage))
 }
 
 // API - инициализирует все обработчики API, требующие авторизации.
@@ -35,8 +35,8 @@ func SensitiveAPI(cfg *config.Config, router chi.Router, log *slog.Logger, stora
 			cfg.AuthUser: cfg.AuthPasswd,
 		}))
 
-		r.Get("/api/session/all", getallgs.New(*log, storage))
-		r.Delete("/api/session/id/{id}", deletegs.New(*log, storage))
-		r.Delete("/api/session/verydangerousbutton", truncate.New(*log, storage)) // Для тестирования
+		r.Get("/session/all", getallgs.New(*log, storage))
+		r.Delete("/session/id/{id}", deletegs.New(*log, storage))
+		r.Delete("/session/verydangerousbutton", truncate.New(*log, storage)) // Для тестирования
 	})
 }

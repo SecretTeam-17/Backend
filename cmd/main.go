@@ -26,18 +26,21 @@ func main() {
 	log.Debug("storage initialized")
 	defer storage.Close()
 
-	// Получаем главный роутер.
+	// Получаем главный роутер и роутер для API.
 	router := chi.NewRouter()
+	routerAPI := chi.NewRouter()
 
+	// Указываем обработчики middleware.
 	server.Middleware(router)
 
-	server.API(router, log, storage)
-	server.SensitiveAPI(cfg, router, log, storage)
+	// Монтируем роутеры и указываем обработчики.
+	router.Mount("/api", routerAPI)
 
-	server.Swagger(router, log)
+	server.API(routerAPI, log, storage)
+	server.SensitiveAPI(cfg, routerAPI, log, storage)
+	server.Swagger(routerAPI, log)
+
 	server.Game(router, log)
-
-	// Указываем обработчики.
 
 	// Создаем новый сервер и запускаем в отдельной горутине.
 	srv := server.New(cfg, router)

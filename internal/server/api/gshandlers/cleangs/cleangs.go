@@ -13,14 +13,10 @@ import (
 	"github.com/go-chi/render"
 )
 
-// type SessionCleaner interface {
-// 	CleanSession(ctx context.Context, id string) (*storage.GameSession, error)
-// }
-
 // New - возвращает новый хэндлер для очистки игровой сессии по id.
 func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const operation = "handlers.cleangs.New"
+		const operation = "gshandlers.cleangs.New"
 
 		log := &alog
 		log = log.With(

@@ -11,14 +11,10 @@ import (
 	"github.com/go-chi/render"
 )
 
-// type AllSessions interface {
-// 	GetSessions(ctx context.Context) ([]storage.GameSession, error)
-// }
-
 // New - возвращает новый хэндлер для получения всех игровых сессий.
 func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const operation = "handlers.getallgs.New"
+		const operation = "gshandlers.getallgs.New"
 
 		log := &alog
 		log = log.With(

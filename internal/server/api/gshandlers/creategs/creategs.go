@@ -27,14 +27,10 @@ type Request struct {
 	Minigames json.RawMessage `json:"minigames"`
 }
 
-// type SessionCreator interface {
-// 	CreateSession(ctx context.Context, name, email string, stats, modules, minigames []byte) (*storage.GameSession, error)
-// }
-
 // New - возвращает новый хэндлер для создания игровой сессии.
 func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const operation = "handlers.creategs.New"
+		const operation = "gshandlers.creategs.New"
 
 		log := &alog
 		log = log.With(

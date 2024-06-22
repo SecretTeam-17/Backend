@@ -16,14 +16,10 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// type SessionByEmail interface {
-// 	GetSessionByEmail(ctx context.Context, email string) (*storage.GameSession, error)
-// }
-
 // New - возвращает новый хэндлер для получения игровой сессии по email.
 func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const operation = "handlers.getgsemail.New"
+		const operation = "gshandlers.getgsemail.New"
 
 		log := &alog
 		log = log.With(

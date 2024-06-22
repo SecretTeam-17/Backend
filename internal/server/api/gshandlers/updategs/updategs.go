@@ -15,14 +15,10 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// type SessionUpdater interface {
-// 	UpdateSession(ctx context.Context, gs storage.GameSession) error
-// }
-
 // New - возвращает новый хэндлер для обновления игровой сессии.
 func New(alog slog.Logger, st storage.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const operation = "handlers.updategs.New"
+		const operation = "gshandlers.updategs.New"
 
 		log := &alog
 		log = log.With(
